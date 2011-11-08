@@ -1,7 +1,10 @@
 package com.yeyaxi.AutoHosts;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -47,10 +50,8 @@ public class AutoHostsActivity extends Activity {
 
 			String curLine = "";
 			String content = "";
-			URL server = new URL(strUrl);
-			HttpURLConnection connection = (HttpURLConnection) server
-
-					.openConnection();
+			URL url = new URL(strUrl);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.connect();
 
@@ -65,17 +66,20 @@ public class AutoHostsActivity extends Activity {
 			}
 			try{
 				// Create file 
-				//				File file = new File("/sdcard/hosts");
-				//				FileWriter fstream = new FileWriter("hosts");
-				//				BufferedWriter out = new BufferedWriter(fstream);
-				//				out.write(content);
+//				File file = new File("/sdcard/hosts");
+//				FileWriter fstream = new FileWriter(file);
+//				BufferedWriter out = new BufferedWriter(fstream);
+//				out.write(content);
 
 				FileOutputStream fOut = openFileOutput("hosts", MODE_PRIVATE);
+//				fOut.write(content.getBytes());
+//				fOut.close();
 				OutputStreamWriter osw = new OutputStreamWriter(fOut);
 				//Close the output stream
 				osw.write(content);
 				osw.flush();
-				//				out.close();
+				Toast.makeText(this, R.string.host_pulled, Toast.LENGTH_SHORT).show();
+//				out.close();
 			}catch (Exception e){//Catch exception if any
 				Log.e("AutoHosts","Error: " + e.getMessage());
 			}

@@ -5,5 +5,6 @@
     <string name="app_name">AutoHosts</string>
     <string name="label_tip">You should have a valid busybox on this device!</string>
     <string name="current_ver">Current Hosts Version:</string>
+    <string name="host_pulled">hosts Retrieved!</string>
 
 </resources>
