@@ -6,5 +6,7 @@
     <string name="label_tip">You should have a valid busybox on this device!</string>
     <string name="current_ver">Current Hosts Version:</string>
     <string name="host_pulled">hosts Retrieved!</string>
+    <string name="btn_setHosts">Set hosts</string>
+    <string name="btn_getHosts">Get hosts</string>
 
 </resources>

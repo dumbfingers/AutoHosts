@@ -14,7 +14,9 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int button1=0x7f050003;
+        public static final int getHosts=0x7f050004;
+        public static final int linearLayout1=0x7f050003;
+        public static final int setHosts=0x7f050005;
         public static final int textView1=0x7f050000;
         public static final int textView2=0x7f050001;
         public static final int ver=0x7f050002;
@@ -24,6 +26,8 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040001;
+        public static final int btn_getHosts=0x7f040006;
+        public static final int btn_setHosts=0x7f040005;
         public static final int current_ver=0x7f040003;
         public static final int hello=0x7f040000;
         public static final int host_pulled=0x7f040004;

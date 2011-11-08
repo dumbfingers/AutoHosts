@@ -5,11 +5,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,12 +32,14 @@ public class AutoHostsActivity extends Activity {
 	Su su = new Su();
 	TextView version;
 	Button getHosts;
+	Button setHosts;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		version = (TextView)findViewById(R.id.ver);
-		getHosts = (Button)findViewById(R.id.button1); 
+		getHosts = (Button)findViewById(R.id.getHosts);
+		setHosts = (Button)findViewById(R.id.setHosts);
 	}
 	public void onResume() {
 		super.onResume();
@@ -41,6 +49,17 @@ public class AutoHostsActivity extends Activity {
 		getHosts.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				getContent(Constants.hosts);
+				try {
+					version.setText(getVersion(Constants.svn));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		setHosts.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				updateHosts();
 			}
 		});
 	}
@@ -52,17 +71,11 @@ public class AutoHostsActivity extends Activity {
 			String content = "";
 			URL url = new URL(strUrl);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
 			connection.connect();
-
 			InputStream is = connection.getInputStream();
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
 			while ((curLine = reader.readLine()) != null) {
-
 				content = content + curLine+ "\r\n";
-
 			}
 			try{
 				// Create file 
@@ -84,7 +97,6 @@ public class AutoHostsActivity extends Activity {
 				Log.e("AutoHosts","Error: " + e.getMessage());
 			}
 			//System.out.println("content= " + content);
-
 			is.close();
 
 			//			}
@@ -99,5 +111,39 @@ public class AutoHostsActivity extends Activity {
 
 		}
 		return strUrl;
+	}
+	
+	public String updateHosts() {
+		//Mount /system as read-write
+		su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
+		Log.d("AutoHosts", "/system R/W mounted");
+		//Copy the newer hosts to replace the older system one
+		su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hosts /system/etc/hosts");
+		Log.d("AutoHosts","Hosts copied to /etc");
+		//Fix the permission
+		su.Run("chmod 644 /system/etc/hosts");
+		Log.d("AutoHosts","Hosts ready to use");
+		return null;
+		
+	}
+	public String getVersion(String s) throws IOException {
+		String version = "";
+		String curLine = "";
+	    URL url = new URL(s);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.connect();
+		InputStream is = connection.getInputStream();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		while ((curLine = reader.readLine()) != null) {
+			version = version + curLine+ "\r\n";
+		}
+
+	    version = version.replaceAll("\\s+", " ");
+	    Pattern p = Pattern.compile("<title>(.*?)</title>");
+	    Matcher m = p.matcher(version);
+	    while (m.find() == true) {
+	      version = m.group(1);
+	    }
+		return version;
 	}
 }
