@@ -11,6 +11,10 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -18,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +33,7 @@ public class AutoHostsActivity extends Activity {
 	Button getHosts;
 	Button setHosts;
 	ProgressDialog load = null;
+	private AdView adView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,6 +41,18 @@ public class AutoHostsActivity extends Activity {
 		version = (TextView)findViewById(R.id.ver);
 		getHosts = (Button)findViewById(R.id.getHosts);
 		setHosts = (Button)findViewById(R.id.setHosts);
+	    // Create the adView
+	    adView = new AdView(this, AdSize.BANNER, Constants.MY_AD_UNIT_ID);
+
+	    // Lookup your LinearLayout assuming it’s been given
+	    // the attribute android:id="@+id/mainLayout"
+	    LinearLayout layout = (LinearLayout)findViewById(R.id.adLayout);
+
+	    // Add the adView to it
+	    layout.addView(adView);
+
+	    // Initiate a generic request to load it with an ad
+	    adView.loadAd(new AdRequest());
 	}
 	public void onResume() {
 		super.onResume();

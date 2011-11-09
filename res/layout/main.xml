@@ -21,14 +21,13 @@
         android:id="@+id/ver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.90"
+        android:layout_weight="0.11"
         android:text="" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:orientation="horizontal" >
 
         <Button
@@ -44,6 +43,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_setHosts" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/adLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
     </LinearLayout>
 
 </LinearLayout>

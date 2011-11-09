@@ -14,6 +14,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
+        public static final int adLayout=0x7f050006;
         public static final int getHosts=0x7f050004;
         public static final int linearLayout1=0x7f050003;
         public static final int setHosts=0x7f050005;
