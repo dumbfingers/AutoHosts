@@ -9,9 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/label_tip"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="9pt" />
+        android:text="@string/label_tip"/>
 
     <TextView
         android:id="@+id/textView2"
@@ -24,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.90"
-        android:text="TextView" />
+        android:text="" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"

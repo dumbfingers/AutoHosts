@@ -1,24 +1,18 @@
 package com.yeyaxi.AutoHosts;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +27,7 @@ public class AutoHostsActivity extends Activity {
 	TextView version;
 	Button getHosts;
 	Button setHosts;
+	ProgressDialog load = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,17 +39,26 @@ public class AutoHostsActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		if(!su.can_su) {
-			Toast.makeText(this, "Error: Cannot get ROOT", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.err_no_root, Toast.LENGTH_SHORT).show();
 		}
 		getHosts.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				getContent(Constants.hosts);
+				load = ProgressDialog.show(AutoHostsActivity.this, "Please standby...", "Now retrieving hosts.", true);
+				new Thread(new Runnable() {
+					public void run() {
+						getContent(Constants.hosts);
+						load.dismiss();
+					}
+				}).start();
+				
 				try {
 					version.setText(getVersion(Constants.svn));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
+				//				GetContentTask.execute(Constants.hosts);
 			}
 		});
 		setHosts.setOnClickListener(new OnClickListener() {
@@ -63,10 +67,27 @@ public class AutoHostsActivity extends Activity {
 			}
 		});
 	}
+//	private class GetContentTask extends AsyncTask<String, Void, String> {
+//		protected void onPreExcute() {
+//			try {
+//				version.setText(getVersion(Constants.svn));
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		@Override
+//		protected String doInBackground(String... strUrl) {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//		protected void onPostExcuted(String strUrl) {
+//			getContent(strUrl);
+//		}
+//	}
 	public String getContent(String strUrl) {
-
 		try {
-
 			String curLine = "";
 			String content = "";
 			URL url = new URL(strUrl);
@@ -75,7 +96,7 @@ public class AutoHostsActivity extends Activity {
 			InputStream is = connection.getInputStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			while ((curLine = reader.readLine()) != null) {
-				content = content + curLine+ "\r\n";
+				content = content + curLine+ "\n";
 			}
 			try{
 				// Create file 
@@ -91,14 +112,13 @@ public class AutoHostsActivity extends Activity {
 				//Close the output stream
 				osw.write(content);
 				osw.flush();
-				Toast.makeText(this, R.string.host_pulled, Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.host_pulled, Toast.LENGTH_LONG).show();
 //				out.close();
 			}catch (Exception e){//Catch exception if any
 				Log.e("AutoHosts","Error: " + e.getMessage());
 			}
 			//System.out.println("content= " + content);
 			is.close();
-
 			//			}
 			//
 			//			br.close();
@@ -123,8 +143,8 @@ public class AutoHostsActivity extends Activity {
 		//Fix the permission
 		su.Run("chmod 644 /system/etc/hosts");
 		Log.d("AutoHosts","Hosts ready to use");
+		Toast.makeText(AutoHostsActivity.this, R.string.host_success, Toast.LENGTH_LONG);
 		return null;
-		
 	}
 	public String getVersion(String s) throws IOException {
 		String version = "";
@@ -135,7 +155,7 @@ public class AutoHostsActivity extends Activity {
 		InputStream is = connection.getInputStream();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		while ((curLine = reader.readLine()) != null) {
-			version = version + curLine+ "\r\n";
+			version = version + curLine+ "\n";
 		}
 
 	    version = version.replaceAll("\\s+", " ");

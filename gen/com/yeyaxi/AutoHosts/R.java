@@ -29,8 +29,12 @@ public final class R {
         public static final int btn_getHosts=0x7f040006;
         public static final int btn_setHosts=0x7f040005;
         public static final int current_ver=0x7f040003;
+        public static final int dialog_title_load=0x7f040007;
+        public static final int dialog_txt_load=0x7f040008;
+        public static final int err_no_root=0x7f040009;
         public static final int hello=0x7f040000;
         public static final int host_pulled=0x7f040004;
+        public static final int host_success=0x7f04000a;
         public static final int label_tip=0x7f040002;
     }
 }
