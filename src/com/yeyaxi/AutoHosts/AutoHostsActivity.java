@@ -1,5 +1,22 @@
 package com.yeyaxi.AutoHosts;
 
+/**
+ *  GNU GPL v3
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
+
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,7 +42,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+/**
+ * AutoHosts - An app for android to update hosts.
+ * @author Yaxi Ye
+ * @version 1
+ * @since Nov.7.2011
+ *
+ */
 public class AutoHostsActivity extends Activity {
 	/** Called when the activity is first created. */
 	Su su = new Su();
@@ -76,7 +99,6 @@ public class AutoHostsActivity extends Activity {
 					e.printStackTrace();
 				}
 
-				//				GetContentTask.execute(Constants.hosts);
 			}
 		});
 		setHosts.setOnClickListener(new OnClickListener() {
@@ -85,25 +107,7 @@ public class AutoHostsActivity extends Activity {
 			}
 		});
 	}
-//	private class GetContentTask extends AsyncTask<String, Void, String> {
-//		protected void onPreExcute() {
-//			try {
-//				version.setText(getVersion(Constants.svn));
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		@Override
-//		protected String doInBackground(String... strUrl) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//		protected void onPostExcuted(String strUrl) {
-//			getContent(strUrl);
-//		}
-//	}
+
 	public String getContent(String strUrl) {
 		try {
 			String curLine = "";
@@ -132,16 +136,11 @@ public class AutoHostsActivity extends Activity {
 				osw.flush();
 				Toast.makeText(this, R.string.host_pulled, Toast.LENGTH_LONG).show();
 //				out.close();
-			}catch (Exception e){//Catch exception if any
+			}catch (Exception e){
+				//Catch exception if any
 				Log.e("AutoHosts","Error: " + e.getMessage());
 			}
-			//System.out.println("content= " + content);
 			is.close();
-			//			}
-			//
-			//			br.close();
-			//
-			//			return sb.toString();
 
 		} catch (Exception e) {
 
@@ -151,6 +150,10 @@ public class AutoHostsActivity extends Activity {
 		return strUrl;
 	}
 	
+	/**
+	 * updateHosts() - Method for updating and replacing hosts file.
+	 * @return
+	 */
 	public String updateHosts() {
 		//Mount /system as read-write
 		su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
@@ -164,6 +167,12 @@ public class AutoHostsActivity extends Activity {
 		Toast.makeText(AutoHostsActivity.this, R.string.host_success, Toast.LENGTH_LONG);
 		return null;
 	}
+	/**
+	 * getVersion - Method for retrieving SVN info
+	 * @param s - Input URL
+	 * @return - Returning String version
+	 * @throws IOException
+	 */
 	public String getVersion(String s) throws IOException {
 		String version = "";
 		String curLine = "";
