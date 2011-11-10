@@ -4,7 +4,7 @@
     <string name="hello">Hello World, AutoHostsActivity!</string>
     <string name="app_name">AutoHosts</string>
     <string name="label_tip">You should have a valid busybox installed on this device!</string>
-    <string name="current_ver">Current Hosts Version:</string>
+    <string name="current_ver">Current Hosts Version on server:</string>
     <string name="host_pulled">hosts Retrieved!</string>
     <string name="btn_setHosts">Set hosts</string>
     <string name="btn_getHosts">Get hosts</string>
@@ -12,5 +12,8 @@
     <string name="dialog_txt_load">Now retrieving hosts.</string>
     <string name="err_no_root">Error: Cannot get ROOT</string>
     <string name="host_success">hosts successfully relaced.</string>
-
+    <string name="label_updating">Update in Progress...</string>
+    <string name="btn_revertHosts">Revert Hosts</string>
+    <string name="label_reverting">Revert in Progress...</string>
+        
 </resources>

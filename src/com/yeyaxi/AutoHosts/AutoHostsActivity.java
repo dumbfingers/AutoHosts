@@ -35,6 +35,8 @@ import com.google.ads.AdView;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +47,7 @@ import android.widget.Toast;
 /**
  * AutoHosts - An app for android to update hosts.
  * @author Yaxi Ye
- * @version 1
+ * @version 1.0.1
  * @since Nov.7.2011
  *
  */
@@ -53,8 +55,10 @@ public class AutoHostsActivity extends Activity {
 	/** Called when the activity is first created. */
 	Su su = new Su();
 	TextView version;
+	TextView textView2;
 	Button getHosts;
 	Button setHosts;
+	Button revertHosts;
 	ProgressDialog load = null;
 	private AdView adView;
 	@Override
@@ -64,6 +68,8 @@ public class AutoHostsActivity extends Activity {
 		version = (TextView)findViewById(R.id.ver);
 		getHosts = (Button)findViewById(R.id.getHosts);
 		setHosts = (Button)findViewById(R.id.setHosts);
+		revertHosts = (Button)findViewById(R.id.revertHosts);
+		textView2 = (TextView)findViewById(R.id.textView2);
 	    // Create the adView
 	    adView = new AdView(this, AdSize.BANNER, Constants.MY_AD_UNIT_ID);
 
@@ -76,37 +82,65 @@ public class AutoHostsActivity extends Activity {
 
 	    // Initiate a generic request to load it with an ad
 	    adView.loadAd(new AdRequest());
+	    textView2.setText(R.string.current_ver);
 	}
 	public void onResume() {
 		super.onResume();
+	    //textView2.setText(R.string.current_ver);
 		if(!su.can_su) {
 			Toast.makeText(this, R.string.err_no_root, Toast.LENGTH_SHORT).show();
 		}
+		
 		getHosts.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				load = ProgressDialog.show(AutoHostsActivity.this, "Please standby...", "Now retrieving hosts.", true);
 				new Thread(new Runnable() {
 					public void run() {
 						getContent(Constants.hosts);
+						Message msg = new Message();
+						msg.what = 1;
+						mHandler.sendMessage(msg);
 						load.dismiss();
 					}
 				}).start();
-				
+
+			}
+		});
+		
+		setHosts.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				updateHosts();
+				Toast.makeText(AutoHostsActivity.this, R.string.host_success, Toast.LENGTH_LONG);
+			}
+		});
+		
+		revertHosts.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				revertHosts();
+			}
+		});
+	}
+	
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage (Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
 				try {
+				    textView2.setText(R.string.current_ver);
 					version.setText(getVersion(Constants.svn));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 
+			default:
+				break;
 			}
-		});
-		setHosts.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				updateHosts();
-			}
-		});
-	}
+		}
+	};
 
 	public String getContent(String strUrl) {
 		try {
@@ -152,20 +186,43 @@ public class AutoHostsActivity extends Activity {
 	
 	/**
 	 * updateHosts() - Method for updating and replacing hosts file.
-	 * @return
+	 * 
 	 */
-	public String updateHosts() {
+	public void updateHosts() {
+		textView2.setText(R.string.label_updating);
+		
 		//Mount /system as read-write
 		su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
 		Log.d("AutoHosts", "/system R/W mounted");
+		version.setText("/system R/W mounted\n", TextView.BufferType.EDITABLE);
+		
+		//Backup the original one
+		su.Run("mv /system/etc/hosts /system/etc/hosts.bak");
+		Log.d("AutoHosts", "Backup hosts as hosts.bak");
+		version.append("Hosts file backup as hosts.bak.\n");
+		
 		//Copy the newer hosts to replace the older system one
 		su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hosts /system/etc/hosts");
 		Log.d("AutoHosts","Hosts copied to /etc");
+		version.append("Hosts is copied to /etc\n");
+		
 		//Fix the permission
 		su.Run("chmod 644 /system/etc/hosts");
 		Log.d("AutoHosts","Hosts ready to use");
-		Toast.makeText(AutoHostsActivity.this, R.string.host_success, Toast.LENGTH_LONG);
-		return null;
+		version.append("Success! The hosts file is ready to use!");
+	}
+	
+	public void revertHosts() {
+		textView2.setText(R.string.label_reverting);
+		//Delete the downloaded one.
+		su.Run("rm -rf /system/etc/hosts");
+		Log.d("AutoHosts", "Delete the download one");
+		version.setText("The downloaded hosts has been removed.\n", TextView.BufferType.EDITABLE);
+		
+		//Revert to the original one.
+		su.Run("mv /system/etc/hosts.bak /system/etc/hosts");
+		Log.d("AutoHosts", "Revert to the original one");
+		version.append("Reverting to the original hosts...\nSuccess!");
 	}
 	/**
 	 * getVersion - Method for retrieving SVN info

@@ -32,17 +32,24 @@
 
         <Button
             android:id="@+id/getHosts"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_getHosts" />
 
         <Button
             android:id="@+id/setHosts"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_setHosts" />
+
+        <Button
+            android:id="@+id/revertHosts"
+            android:layout_width="102dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_revertHosts" />
     </LinearLayout>
 
     <LinearLayout
