@@ -33,11 +33,16 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -47,7 +52,7 @@ import android.widget.Toast;
 /**
  * AutoHosts - An app for android to update hosts.
  * @author Yaxi Ye
- * @version 1.0.1
+ * @version 1.0.2
  * @since Nov.7.2011
  *
  */
@@ -121,6 +126,52 @@ public class AutoHostsActivity extends Activity {
 		});
 	}
 	
+	//For Menus
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+		
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item){
+		//Handle menu item selection
+		switch(item.getItemId()) {
+		case R.id.fix_dns:
+			//Add dialog for DNS
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.dialog_dns);
+			builder.setCancelable(true);
+			builder.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					//Set 3G DNS
+					su.Run("setprop net.rmnet0.dns1 8.8.8.8");
+					Log.d("AutoHosts", "net.rmnet0.dns1 updated.");
+					su.Run("setprop net.rmnet0.dns2 208.67.220.220");
+					Log.d("AutoHosts", "net.rmnet0.dns2 updated.");
+					//Set DNS
+					su.Run("setprop net.dns1 8.8.8.8");
+					Log.d("AutoHosts", "net.dns1 updated.");
+					su.Run("setprop net.dns2 208.67.220.220");
+					Log.d("AutoHosts", "net.dns2 updated.");
+					dialog.cancel();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+
+		case R.id.add_hosts_entry:
+			//Add dialog for add entry
+		case R.id.about:
+			//Add dialog for About
+		}
+		return true;
+		
+	}
+	
+	//Threads
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage (Message msg) {
