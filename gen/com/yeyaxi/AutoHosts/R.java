@@ -14,9 +14,8 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int about=0x7f06000a;
+        public static final int about=0x7f060009;
         public static final int adLayout=0x7f060007;
-        public static final int add_hosts_entry=0x7f060009;
         public static final int fix_dns=0x7f060008;
         public static final int getHosts=0x7f060004;
         public static final int linearLayout1=0x7f060003;
@@ -40,6 +39,7 @@ public final class R {
         public static final int btn_revertHosts=0x7f04000c;
         public static final int btn_setHosts=0x7f040005;
         public static final int current_ver=0x7f040003;
+        public static final int dialog_about=0x7f040012;
         public static final int dialog_dns=0x7f040011;
         public static final int dialog_title_load=0x7f040007;
         public static final int dialog_txt_load=0x7f040008;

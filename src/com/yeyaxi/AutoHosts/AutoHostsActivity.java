@@ -140,10 +140,10 @@ public class AutoHostsActivity extends Activity {
 		switch(item.getItemId()) {
 		case R.id.fix_dns:
 			//Add dialog for DNS
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.dialog_dns);
-			builder.setCancelable(true);
-			builder.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener() {
+			AlertDialog.Builder builderDNS = new AlertDialog.Builder(this);
+			builderDNS.setMessage(R.string.dialog_dns);
+			builderDNS.setCancelable(true);
+			builderDNS.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
 					//Set 3G DNS
@@ -159,13 +159,27 @@ public class AutoHostsActivity extends Activity {
 					dialog.cancel();
 				}
 			});
-			AlertDialog alert = builder.create();
-			alert.show();
+			AlertDialog alertDNS = builderDNS.create();
+			alertDNS.show();
 
-		case R.id.add_hosts_entry:
-			//Add dialog for add entry
+//		case R.id.add_hosts_entry:
+//			//Add dialog for add entry
 		case R.id.about:
 			//Add dialog for About
+			AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
+			builderAbout.setMessage(R.string.dialog_about);
+			builderAbout.setTitle(R.string.about);
+			builderAbout.setCancelable(true);
+			builderAbout.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+			});
+			AlertDialog alertAbout = builderAbout.create();
+			alertAbout.show();
 		}
 		return true;
 		
