@@ -27,7 +27,6 @@ package com.yeyaxi.AutoHosts;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import android.widget.Toast;
 
 public class Su {
 /*

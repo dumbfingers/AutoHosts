@@ -35,17 +35,22 @@ import com.google.ads.AdView;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -142,7 +147,7 @@ public class AutoHostsActivity extends Activity {
 			//Add dialog for DNS
 			AlertDialog.Builder builderDNS = new AlertDialog.Builder(this);
 			builderDNS.setMessage(R.string.dialog_dns);
-			builderDNS.setCancelable(true);
+//			builderDNS.setCancelable(true);
 			builderDNS.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
@@ -159,11 +164,28 @@ public class AutoHostsActivity extends Activity {
 					dialog.cancel();
 				}
 			});
+			builderDNS.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+				
+			});
+			
 			AlertDialog alertDNS = builderDNS.create();
 			alertDNS.show();
+			break;
 
-//		case R.id.add_hosts_entry:
+		case R.id.add_hosts_entry:
 //			//Add dialog for add entry
+			//Call another activity to handle this.
+			Intent i = new Intent(getApplicationContext(), AppendItemActivity.class);
+			this.startActivity(i);
+
+			break;
+
 		case R.id.about:
 			//Add dialog for About
 			AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
@@ -180,12 +202,13 @@ public class AutoHostsActivity extends Activity {
 			});
 			AlertDialog alertAbout = builderAbout.create();
 			alertAbout.show();
+			break;
 		}
 		return true;
 		
 	}
 	
-	//Threads
+	//Threads to retrieve online content
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage (Message msg) {
