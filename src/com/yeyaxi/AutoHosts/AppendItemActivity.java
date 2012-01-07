@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -41,6 +42,7 @@ public class AppendItemActivity extends Activity {
 	EditText items;
 	Button ok;
 	Button cancel;
+	Su su;
 	
 	public void onCreate(Bundle icicle) {
 		
@@ -95,6 +97,23 @@ public class AppendItemActivity extends Activity {
 			OutputStreamWriter osw = new OutputStreamWriter(fOut);
 			osw.write("\n#Custom\n" + item);
 			osw.flush();
+			
+			//Replace the system file with the edited one
+			//Mount /system as read-write
+			su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
+			Log.d("AutoHosts", "/system R/W mounted");
+			
+			//Backup the original one
+			su.Run("mv /system/etc/hosts /system/etc/hosts.bak");
+			Log.d("AutoHosts", "Backup hosts as hosts.bak");
+			
+			//Copy the newer hosts to replace the older system one
+			su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hosts /system/etc/hosts");
+			Log.d("AutoHosts","Hosts copied to /etc");
+			
+			//Fix the permission
+			su.Run("chmod 644 /system/etc/hosts");
+			Log.d("AutoHosts","Hosts ready to use");
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

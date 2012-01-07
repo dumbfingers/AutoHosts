@@ -179,11 +179,45 @@ public class AutoHostsActivity extends Activity {
 			break;
 
 		case R.id.add_hosts_entry:
-//			//Add dialog for add entry
+			//Add dialog for add entry
+			
 			//Call another activity to handle this.
 			Intent i = new Intent(getApplicationContext(), AppendItemActivity.class);
 			this.startActivity(i);
 
+			break;
+		
+		case R.id.revert_blank:
+			//Revert hosts to blank
+			
+			//Create a blank hosts file
+			try {
+				FileOutputStream fOut = openFileOutput("hostsBlank", MODE_PRIVATE);
+				OutputStreamWriter osw = new OutputStreamWriter(fOut);
+				//Close the output stream
+				osw.write("");
+				osw.flush();
+			}catch (Exception e) {
+				Log.d("AutoHosts", "Creating blank hosts file error.");
+			}
+			//Mount /system as read-write
+			su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
+			Log.d("AutoHosts", "/system R/W mounted");
+			
+			//Backup the current hosts
+			su.Run("mv /system/etc/hosts /system/etc/hosts.bak");
+			Log.d("AutoHosts", "Backup hosts as hosts.bak");
+			version.append("Hosts file backup as hosts.bak.\n");
+			
+			//Copy the blank hosts to system path
+			su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hostsBlank /system/etc/hosts");
+			Log.d("AutoHosts","Blank hosts copied to /etc");
+			
+			//Fix the permission
+			su.Run("chmod 644 /system/etc/hosts");
+			Log.d("AutoHosts","Hosts reverted.");
+			version.append("Successfully reverted hosts to blank!\n");
+			
 			break;
 
 		case R.id.about:
@@ -230,6 +264,11 @@ public class AutoHostsActivity extends Activity {
 		}
 	};
 
+	/**
+	 * getContent
+	 * @param strUrl
+	 * @return the target URL
+	 */
 	public String getContent(String strUrl) {
 		try {
 			String curLine = "";
@@ -297,7 +336,7 @@ public class AutoHostsActivity extends Activity {
 		//Fix the permission
 		su.Run("chmod 644 /system/etc/hosts");
 		Log.d("AutoHosts","Hosts ready to use");
-		version.append("Success! The hosts file is ready to use!");
+		version.append("Success! The hosts file is ready to use!\n");
 	}
 	
 	public void revertHosts() {

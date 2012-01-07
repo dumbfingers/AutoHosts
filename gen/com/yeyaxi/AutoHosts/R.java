@@ -15,15 +15,16 @@ public final class R {
     }
     public static final class id {
         public static final int RootView=0x7f060005;
-        public static final int about=0x7f06000e;
+        public static final int about=0x7f06000f;
         public static final int adLayout=0x7f06000b;
-        public static final int add_hosts_entry=0x7f06000d;
+        public static final int add_hosts_entry=0x7f06000c;
         public static final int btn_cancel=0x7f060004;
         public static final int btn_ok=0x7f060003;
-        public static final int fix_dns=0x7f06000c;
+        public static final int fix_dns=0x7f06000e;
         public static final int getHosts=0x7f060008;
         public static final int linearLayout1=0x7f060002;
         public static final int revertHosts=0x7f06000a;
+        public static final int revert_blank=0x7f06000d;
         public static final int setHosts=0x7f060009;
         public static final int textView1=0x7f060000;
         public static final int textView2=0x7f060006;
@@ -61,5 +62,6 @@ public final class R {
         public static final int label_reverting=0x7f04000d;
         public static final int label_tip=0x7f040002;
         public static final int label_updating=0x7f04000b;
+        public static final int revert_blank=0x7f040017;
     }
 }
