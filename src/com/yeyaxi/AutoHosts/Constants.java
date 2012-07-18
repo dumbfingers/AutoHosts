@@ -2,7 +2,7 @@ package com.yeyaxi.AutoHosts;
 
 /**
  *  GNU GPL v3
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -29,5 +29,7 @@ package com.yeyaxi.AutoHosts;
 public class Constants {
 	public static final String hosts = "https://kelvin-mirex-svn.googlecode.com/svn/trunk/ipv4-hosts/hosts";
 	public static final String svn = "https://kelvin-mirex-svn.googlecode.com/svn/trunk/ipv4-hosts/";
+	public static final String LOG_NAME = "AutoHosts";
 	public static final String MY_AD_UNIT_ID = "a14eba45f4f4154";
+	public static int APPEND_ITEM_REQUEST_CODE = 100;
 }

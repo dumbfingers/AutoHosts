@@ -2,7 +2,7 @@ package com.yeyaxi.AutoHosts;
 
 /**
  *  GNU GPL v3
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -17,70 +17,76 @@ package com.yeyaxi.AutoHosts;
  *  
  */
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * AutoHosts - An app for android to update hosts.
+ *
  * @author Yaxi Ye
  * @version 1.0.2
  * @since Nov.7.2011
- *
  */
-public class AutoHostsActivity extends Activity {
-	/** Called when the activity is first created. */
-	Su su = new Su();
-	TextView version;
-	TextView textView2;
-	Button getHosts;
-	Button setHosts;
-	Button revertHosts;
-	ProgressDialog load = null;
+public class AutoHostsActivity extends Activity
+{
+
+
+	private enum TASK
+	{
+		BACKUP_ENTRIES, LOAD_NEW_ENTRIES, DOWNLOAD_NEW_ENTRIES, REVERT_ENTRIES, DELETE_DOWNLOADED_ENTRIES, DELETE_BACKUP, DISPLAY_SUCCESS_MESSAGE, DISPLAY_REVERT_MESSAGE, CREATE_BLANK_FILE_, LOAD_BLANK_FILE
+	}
+
+	private static final DateFormat df = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+	private Queue<TASK> taskQueue = null;
+	private TextView version;
+	private TextView textView2;
+	private Button getHosts;
+	private Button setHosts;
+	private Button revertHosts;
+	private ProgressDialog load = null;
 	private AdView adView;
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate (Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		version = (TextView)findViewById(R.id.ver);
-		getHosts = (Button)findViewById(R.id.getHosts);
-		setHosts = (Button)findViewById(R.id.setHosts);
-		revertHosts = (Button)findViewById(R.id.revertHosts);
-		textView2 = (TextView)findViewById(R.id.textView2);
-	    // Create the adView
+
+		version = (TextView) findViewById(R.id.ver);
+		getHosts = (Button) findViewById(R.id.getHosts);
+		setHosts = (Button) findViewById(R.id.setHosts);
+		revertHosts = (Button) findViewById(R.id.revertHosts);
+		textView2 = (TextView) findViewById(R.id.textView2);
+		// Create the adView
 	    adView = new AdView(this, AdSize.BANNER, Constants.MY_AD_UNIT_ID);
 
 	    // Lookup your LinearLayout assuming it’s been given
@@ -92,289 +98,357 @@ public class AutoHostsActivity extends Activity {
 
 	    // Initiate a generic request to load it with an ad
 	    adView.loadAd(new AdRequest());
-	    textView2.setText(R.string.current_ver);
+		try
+		{
+			version.setText(getString(R.string.current_ver) + getVersion(Constants.svn));
+		} catch (IOException ex)
+		{
+			Log.d(Constants.LOG_NAME, "Error getting version", ex);
+			version.setText(getString(R.string.current_ver) + " Unknown");
+		}
+		taskQueue = new LinkedList<TASK>();
 	}
-	public void onResume() {
+
+	@Override
+	  public void onDestroy() {
+	    if (adView != null) {
+	      adView.destroy();
+	    }
+	    super.onDestroy();
+	  }
+	
+	
+	public void onResume ()
+	{
 		super.onResume();
-	    //textView2.setText(R.string.current_ver);
-		if(!su.can_su) {
+		if (!RootChecker.hasRoot())
+		{
 			Toast.makeText(this, R.string.err_no_root, Toast.LENGTH_SHORT).show();
 		}
-		
-		getHosts.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				load = ProgressDialog.show(AutoHostsActivity.this, "Please standby...", "Now retrieving hosts.", true);
-				new Thread(new Runnable() {
-					public void run() {
-						getContent(Constants.hosts);
-						Message msg = new Message();
-						msg.what = 1;
-						mHandler.sendMessage(msg);
-						load.dismiss();
-					}
-				}).start();
 
+		getHosts.setOnClickListener(new OnClickListener()
+		{
+			public void onClick (View v)
+			{
+				taskQueue.clear();
+				addTask(TASK.BACKUP_ENTRIES);
+				addTask(TASK.DOWNLOAD_NEW_ENTRIES);
+				addTask(TASK.LOAD_NEW_ENTRIES);
+				doNextTask();
 			}
 		});
-		
-		setHosts.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				updateHosts();
-				Toast.makeText(AutoHostsActivity.this, R.string.host_success, Toast.LENGTH_LONG);
+
+		setHosts.setOnClickListener(new OnClickListener()
+		{
+			public void onClick (View v)
+			{
+				taskQueue.clear();
+				displayCalbackMessage(R.string.label_updating);
+				addTask(TASK.BACKUP_ENTRIES);
+				addTask(TASK.LOAD_NEW_ENTRIES);
+				addTask(TASK.DISPLAY_SUCCESS_MESSAGE);
+				doNextTask();
 			}
 		});
-		
-		revertHosts.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				revertHosts();
+
+		revertHosts.setOnClickListener(new OnClickListener()
+		{
+			public void onClick (View v)
+			{
+				taskQueue.clear();
+				displayCalbackMessage(R.string.label_reverting);
+				addTask(TASK.REVERT_ENTRIES);
+				addTask(TASK.DELETE_DOWNLOADED_ENTRIES);
+				addTask(TASK.DELETE_BACKUP);
+				addTask(TASK.DISPLAY_REVERT_MESSAGE);
+				doNextTask();
 			}
 		});
 	}
-	
+
 	//For Menus
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
+	public boolean onCreateOptionsMenu (Menu menu)
+	{
+		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
-		
+
 	}
-	
-	public boolean onOptionsItemSelected(MenuItem item){
+
+	public boolean onOptionsItemSelected (MenuItem item)
+	{
 		//Handle menu item selection
-		switch(item.getItemId()) {
-		case R.id.fix_dns:
-			//Add dialog for DNS
-			AlertDialog.Builder builderDNS = new AlertDialog.Builder(this);
-			builderDNS.setMessage(R.string.dialog_dns);
+		switch (item.getItemId())
+		{
+			case R.id.fix_dns:
+				//Add dialog for DNS
+				AlertDialog.Builder builderDNS = new AlertDialog.Builder(this);
+				builderDNS.setMessage(R.string.dialog_dns);
 //			builderDNS.setCancelable(true);
-			builderDNS.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int id) {
-					//Set 3G DNS
-					su.Run("setprop net.rmnet0.dns1 8.8.8.8");
-					Log.d("AutoHosts", "net.rmnet0.dns1 updated.");
-					su.Run("setprop net.rmnet0.dns2 208.67.220.220");
-					Log.d("AutoHosts", "net.rmnet0.dns2 updated.");
-					//Set DNS
-					su.Run("setprop net.dns1 8.8.8.8");
-					Log.d("AutoHosts", "net.dns1 updated.");
-					su.Run("setprop net.dns2 208.67.220.220");
-					Log.d("AutoHosts", "net.dns2 updated.");
-					dialog.cancel();
-				}
-			});
-			builderDNS.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+				builderDNS.setPositiveButton("OK to Proceed", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick (DialogInterface dialog, int id)
+					{
+						//Set 3G DNS
+						String[] commands = new String[4];
+						commands[0] = "setprop net.rmnet0.dns1 8.8.8.8";
+						commands[1] = "setprop net.rmnet0.dns2 208.67.220.220";
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					dialog.cancel();
-				}
-				
-			});
-			
-			AlertDialog alertDNS = builderDNS.create();
-			alertDNS.show();
-			break;
+						//Set DNS
+						commands[2] = "setprop net.dns1 8.8.8.8";
+						commands[3] = "setprop net.dns2 208.67.220.220";
 
-		case R.id.add_hosts_entry:
-			//Add dialog for add entry
-			
-			//Call another activity to handle this.
-			Intent i = new Intent(getApplicationContext(), AppendItemActivity.class);
-			this.startActivity(i);
+						new CommandRunner(AutoHostsActivity.this, R.string.label_fixingDNS).execute(commands);
 
-			break;
-		
-		case R.id.revert_blank:
-			//Revert hosts to blank
-			
-			//Create a blank hosts file
-			try {
-				FileOutputStream fOut = openFileOutput("hostsBlank", MODE_PRIVATE);
-				OutputStreamWriter osw = new OutputStreamWriter(fOut);
-				//Close the output stream
-				osw.write("");
-				osw.flush();
-			}catch (Exception e) {
-				Log.d("AutoHosts", "Creating blank hosts file error.");
-			}
-			//Mount /system as read-write
-			su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
-			Log.d("AutoHosts", "/system R/W mounted");
-			
-			//Backup the current hosts
-			su.Run("mv /system/etc/hosts /system/etc/hosts.bak");
-			Log.d("AutoHosts", "Backup hosts as hosts.bak");
-			version.append("Hosts file backup as hosts.bak.\n");
-			
-			//Copy the blank hosts to system path
-			su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hostsBlank /system/etc/hosts");
-			Log.d("AutoHosts","Blank hosts copied to /etc");
-			
-			//Fix the permission
-			su.Run("chmod 644 /system/etc/hosts");
-			Log.d("AutoHosts","Hosts reverted.");
-			version.append("Successfully reverted hosts to blank!\n");
-			
-			break;
+						dialog.dismiss();
+					}
+				});
+				builderDNS.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener()
+				{
 
-		case R.id.about:
-			//Add dialog for About
-			AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
-			builderAbout.setMessage(R.string.dialog_about);
-			builderAbout.setTitle(R.string.about);
-			builderAbout.setCancelable(true);
-			builderAbout.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					dialog.cancel();
-				}
-			});
-			AlertDialog alertAbout = builderAbout.create();
-			alertAbout.show();
-			break;
+					@Override
+					public void onClick (DialogInterface dialog, int which)
+					{
+						dialog.cancel();
+					}
+
+				});
+
+				AlertDialog alertDNS = builderDNS.create();
+				alertDNS.show();
+				break;
+
+			case R.id.add_hosts_entry:
+				//Add dialog for add entry
+
+				//Call another activity to handle this.
+				Intent intent = new Intent(getApplicationContext(), AppendItemActivity.class);
+				this.startActivityForResult(intent, Constants.APPEND_ITEM_REQUEST_CODE);
+
+				break;
+
+			case R.id.revert_blank:
+				taskQueue.clear();
+				addTask(TASK.BACKUP_ENTRIES);
+				addTask(TASK.LOAD_BLANK_FILE);
+				addTask(TASK.DISPLAY_REVERT_MESSAGE);
+				doNextTask();
+				break;
+
+			case R.id.about:
+				//Add dialog for About
+				AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
+				builderAbout.setMessage(R.string.dialog_about);
+				builderAbout.setTitle(R.string.about);
+				builderAbout.setCancelable(true);
+				builderAbout.setPositiveButton("OK", new DialogInterface.OnClickListener()
+				{
+
+					@Override
+					public void onClick (DialogInterface dialog, int which)
+					{
+						dialog.cancel();
+					}
+				});
+				AlertDialog alertAbout = builderAbout.create();
+				alertAbout.show();
+				break;
 		}
 		return true;
-		
-	}
-	
-	//Threads to retrieve online content
-	private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage (Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case 1:
-				try {
-				    textView2.setText(R.string.current_ver);
-					version.setText(getVersion(Constants.svn));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
 
-			default:
-				break;
+	}
+
+	@Override
+	protected void onActivityResult (int requestCode, int resultCode, Intent data)
+	{
+		if (resultCode == Constants.APPEND_ITEM_REQUEST_CODE)
+		{
+			Serializable newEntry = data.getSerializableExtra("NewEntry");
+			if (newEntry != null)
+			{
+				addEntryToFile(newEntry.toString(), "newHost");
+				new FileCopier(AutoHostsActivity.this, R.string.addingHostsToFile, true).execute(getFilesDir() + "/newHost", "/system/etc/hosts");
 			}
 		}
-	};
 
-	/**
-	 * getContent
-	 * @param strUrl
-	 * @return the target URL
-	 */
-	public String getContent(String strUrl) {
-		try {
-			String curLine = "";
-			String content = "";
-			URL url = new URL(strUrl);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.connect();
-			InputStream is = connection.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-			while ((curLine = reader.readLine()) != null) {
-				content = content + curLine+ "\n";
-			}
-			try{
-				// Create file 
-//				File file = new File("/sdcard/hosts");
-//				FileWriter fstream = new FileWriter(file);
-//				BufferedWriter out = new BufferedWriter(fstream);
-//				out.write(content);
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
-				FileOutputStream fOut = openFileOutput("hosts", MODE_PRIVATE);
-//				fOut.write(content.getBytes());
-//				fOut.close();
-				OutputStreamWriter osw = new OutputStreamWriter(fOut);
-				//Close the output stream
-				osw.write(content);
-				osw.flush();
-				Toast.makeText(this, R.string.host_pulled, Toast.LENGTH_LONG).show();
-//				out.close();
-			}catch (Exception e){
-				//Catch exception if any
-				Log.e("AutoHosts","Error: " + e.getMessage());
-			}
-			is.close();
-
-		} catch (Exception e) {
-
-			return "error open url:" + strUrl;
-
+	public void loadHostsFromInputStream (InputStream inputStream)
+	{
+		if (inputStream == null)
+			displayCalbackErrorMessage(R.string.label_updating);
+		else
+		{
+			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(inputStream, getFilesDir() + "/hosts");
+			displayCalbackMessage(R.string.host_pulled);
 		}
-		return strUrl;
 	}
-	
-	/**
-	 * updateHosts() - Method for updating and replacing hosts file.
-	 * 
-	 */
-	public void updateHosts() {
-		textView2.setText(R.string.label_updating);
-		
-		//Mount /system as read-write
-		su.Run("mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system");
-		Log.d("AutoHosts", "/system R/W mounted");
-		version.setText("/system R/W mounted\n", TextView.BufferType.EDITABLE);
-		
-		//Backup the original one
-		su.Run("mv /system/etc/hosts /system/etc/hosts.bak");
-		Log.d("AutoHosts", "Backup hosts as hosts.bak");
-		version.append("Hosts file backup as hosts.bak.\n");
-		
-		//Copy the newer hosts to replace the older system one
-		su.Run("cp /data/data/com.yeyaxi.AutoHosts/files/hosts /system/etc/hosts");
-		Log.d("AutoHosts","Hosts copied to /etc");
-		version.append("Hosts is copied to /etc\n");
-		
-		//Fix the permission
-		su.Run("chmod 644 /system/etc/hosts");
-		Log.d("AutoHosts","Hosts ready to use");
-		version.append("Success! The hosts file is ready to use!\n");
-	}
-	
-	public void revertHosts() {
-		textView2.setText(R.string.label_reverting);
-		//Delete the downloaded one.
-		su.Run("rm -rf /system/etc/hosts");
-		Log.d("AutoHosts", "Delete the download one");
-		version.setText("The downloaded hosts has been removed.\n", TextView.BufferType.EDITABLE);
-		
-		//Revert to the original one.
-		su.Run("mv /system/etc/hosts.bak /system/etc/hosts");
-		Log.d("AutoHosts", "Revert to the original one");
-		version.append("Reverting to the original hosts...\nSuccess!");
-	}
+
 	/**
 	 * getVersion - Method for retrieving SVN info
+	 *
 	 * @param s - Input URL
 	 * @return - Returning String version
 	 * @throws IOException
 	 */
-	public String getVersion(String s) throws IOException {
+	public String getVersion (String s) throws IOException
+	{
 		String version = "";
 		String curLine = "";
-	    URL url = new URL(s);
+		URL url = new URL(s);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.connect();
 		InputStream is = connection.getInputStream();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		while ((curLine = reader.readLine()) != null) {
-			version = version + curLine+ "\n";
+		while ((curLine = reader.readLine()) != null)
+		{
+			version = version + curLine + "\n";
 		}
 
-	    version = version.replaceAll("\\s+", " ");
-	    Pattern p = Pattern.compile("<title>(.*?)</title>");
-	    Matcher m = p.matcher(version);
-	    while (m.find() == true) {
-	      version = m.group(1);
-	    }
+		version = version.replaceAll("\\s+", " ");
+		Pattern p = Pattern.compile("<title>(.*?)</title>");
+		Matcher m = p.matcher(version);
+		while (m.find() == true)
+		{
+			version = m.group(1);
+		}
 		return version;
+	}
+
+	public void displayCalbackErrorMessage (final int... completionMessage)
+	{
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run ()
+			{
+				if (load != null && load.isShowing())
+					load.dismiss();
+				StringBuilder sb = new StringBuilder();
+				for (int messageId : completionMessage)
+					sb.append(getString(messageId));
+				sb.append(getString(R.string.errorPrefix));
+				textView2.setText(getTimeStamp() + sb.toString() + "\n" + textView2.getText());
+			}
+		});
+	}
+
+	public void displayCalbackMessage (final int... id)
+	{
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run ()
+			{
+				if (load != null && load.isShowing())
+					load.dismiss();
+				StringBuilder sb = new StringBuilder();
+				for (int messageId : id)
+					sb.append(getString(messageId));
+				textView2.setText(getTimeStamp() + sb.toString() + "\n" + textView2.getText());
+			}
+		});
+	}
+	
+	private String getTimeStamp()
+	{
+		return "[" + df.format(new Date()) + "] ";
+	}
+
+	private void addEntryToFile (String entry, String fileName)
+	{
+		FileOutputStream fOut = null;
+		OutputStreamWriter osw = null;
+		try
+		{
+			fOut = openFileOutput(fileName, MODE_PRIVATE);
+			osw = new OutputStreamWriter(fOut);
+			osw.write(entry);
+			osw.flush();
+		} catch (Exception e)
+		{
+			Log.d("AutoHosts", "Creating blank hosts file error.");
+		} finally
+		{
+			closeStream(osw);
+			closeStream(fOut);
+		}
+	}
+
+	private void closeStream (Closeable closeable)
+	{
+		if (closeable != null)
+		{
+			try
+			{
+				closeable.close();
+			} catch (IOException ex)
+			{
+				Log.d(Constants.LOG_NAME, "Error closing stream.", ex);
+			}
+		}
+	}
+
+
+	public void addTask (TASK nextTask)
+	{
+		if (taskQueue == null)
+			taskQueue = new PriorityQueue<TASK>();
+
+		taskQueue.add(nextTask);
+	}
+
+	public void doNextTask ()
+	{
+		if (load != null && load.isShowing())
+			load.hide();
+		if (taskQueue != null && taskQueue.peek() != null)
+		{
+			switch (taskQueue.remove())
+			{
+				case BACKUP_ENTRIES:
+					displayCalbackMessage(R.string.label_backingup);
+					new FileCopier(AutoHostsActivity.this, R.string.label_backingup, false).execute("/system/etc/hosts", getFilesDir() + "/hosts.bak");
+					break;
+				case LOAD_NEW_ENTRIES:
+					displayCalbackMessage(R.string.label_loadingFile);
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getFilesDir() + "/hosts", "/system/etc/hosts");
+					break;
+				case DOWNLOAD_NEW_ENTRIES:
+					load = ProgressDialog.show(AutoHostsActivity.this, getString(R.string.dialog_title_load), getString(R.string.dialog_txt_load), true);
+					new WebFileDownloader(AutoHostsActivity.this).execute(Constants.hosts);
+					break;
+				case REVERT_ENTRIES:
+					displayCalbackMessage(R.string.label_reverting);
+					File backupFile = new File(getFilesDir() + "/hosts.bak");
+					// Check if the file exists.  If it doesn't exist quickly make a new backup with only the localhost entry
+					if (backupFile == null || !backupFile.isFile())
+						addEntryToFile("127.0.0.1 localhost", "hosts.bak");
+					new FileCopier(AutoHostsActivity.this, R.string.label_reverting, false).execute(getFilesDir() + "/hosts.bak", "/system/etc/hosts");
+					break;
+				case DELETE_DOWNLOADED_ENTRIES:
+					displayCalbackMessage(R.string.label_deleteDownloadedFiles);
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deleteDownloadedFiles).execute(getFilesDir() + "/hosts");
+					break;
+				case DELETE_BACKUP:
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deletingBackupFiles).execute(getFilesDir() + "/hosts.bak");
+					break;
+				case LOAD_BLANK_FILE:
+					addEntryToFile("127.0.0.1 localhost", "blank");
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getFilesDir() + "/blank", "/system/etc/hosts");
+					break;
+				case DISPLAY_SUCCESS_MESSAGE:
+					displayCalbackMessage(R.string.host_success);
+					doNextTask();
+					break;
+				case DISPLAY_REVERT_MESSAGE:
+					displayCalbackMessage(R.string.label_reverting, R.string.append_success);
+					doNextTask();
+					break;
+
+			}
+		}
 	}
 }

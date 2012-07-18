@@ -25,6 +25,14 @@
     <string name="dialog_title_append">添加hosts条目</string>
     <string name="append_success">添加成功！</string>
     <string name="revert_blank">恢复为空白hosts</string>
+    <string name="errorDownloading">hosts下载错误</string>
+    <string name="errorPrefix">错误</string>
+    <string name="label_fixingDNS">正在设定DNS...</string>
+    <string name="addingHostsToFile">正在添加hosts条目...</string>
+    <string name="label_backingup">正在备份已有hosts...</string>
+    <string name="label_loadingFile">正在读取hosts条目...</string>
+    <string name="label_deleteDownloadedFiles">删除已下载内容...</string>
+    <string name="label_deletingBackupFiles">删除备份文件...</string>
         
         
 </resources>

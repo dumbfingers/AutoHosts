@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/add_hosts_entry" android:title="@string/add_hosts_entry"></item><item android:id="@+id/revert_blank" android:title="@string/revert_blank"></item><item android:id="@+id/fix_dns" android:title="@string/fix_dns"></item>
-	
-    <item android:id="@+id/about" android:title="@string/about"></item>
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/add_hosts_entry" android:title="@string/add_hosts_entry"></item>
+    <item android:id="@+id/revert_blank" android:title="@string/revert_blank"></item>
+    <item android:id="@+id/fix_dns" android:title="@string/fix_dns"></item>
 
-    
+    <item android:id="@+id/about" android:title="@string/about"></item>
+
 
 </menu>
