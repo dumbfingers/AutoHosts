@@ -32,4 +32,4 @@ Initial Launch
 
 ###Download
 ![download qr code](https://lh4.googleusercontent.com/-IGoDAZ2LLw0/Trqid66alAI/AAAAAAAACdk/hAT40TPPI3E/s800/AutoHostsQR.png)
-![via Google Play](https://play.google.com/store/apps/details?id=com.yeyaxi.AutoHosts)
+via[Google Play](https://play.google.com/store/apps/details?id=com.yeyaxi.AutoHosts)
