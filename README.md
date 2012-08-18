@@ -1,5 +1,6 @@
 Autohost
 ====
+![icon](https://lh3.ggpht.com/rhz4G7wTmdvONluvzd03kcv3AuuI5cDNzPSt5552hjh0-xv7oPye5e4UmGzaAiTmAhs=w124)
 ### Description
 AutoHosts is a automatically hosts file changer. It exploits the hosts file to help you bypass or penetrate the Great Fire Wall (GFW) censorship in mainland China. Please carefully read the NOTE below before using it.
 This app is not perfectly polished, if you have any complaints, please directly contact me.
@@ -28,3 +29,7 @@ Added Backup/Revert function. Now you the app could automatically backup the ori
 
 * Nov.09.2011 *v1.0*   
 Initial Launch
+
+###Download
+![download qr code](https://lh4.googleusercontent.com/-IGoDAZ2LLw0/Trqid66alAI/AAAAAAAACdk/hAT40TPPI3E/s800/AutoHostsQR.png)
+![via Google Play](https://play.google.com/store/apps/details?id=com.yeyaxi.AutoHosts)
