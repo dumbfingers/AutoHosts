@@ -1,14 +1,11 @@
 package com.yeyaxi.android.autohosts;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -16,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.yeyaxi.AutoHosts.R;
@@ -46,7 +45,7 @@ import java.util.regex.Pattern;
  * @version 1.0.2
  * @since Nov.7.2011
  */
-public class AutoHostsActivity extends Activity
+public class AutoHostsActivity extends BaseActivity
 {
 
 
@@ -72,6 +71,9 @@ public class AutoHostsActivity extends Activity
 		setContentView(R.layout.main);
 
 		version = (TextView) findViewById(R.id.ver);
+        // apply fonts
+        setFont(version);
+        
 		getHosts = (Button) findViewById(R.id.getHosts);
 		setHosts = (Button) findViewById(R.id.setHosts);
 		revertHosts = (Button) findViewById(R.id.revertHosts);
@@ -164,7 +166,7 @@ public class AutoHostsActivity extends Activity
 	@Override
 	public boolean onCreateOptionsMenu (Menu menu)
 	{
-		getMenuInflater().inflate(R.menu.main_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 
 	}
