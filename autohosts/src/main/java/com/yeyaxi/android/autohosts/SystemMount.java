@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class SystemMount
 {
+    private static final String TAG = SystemMount.class.getSimpleName();
 
 	public static String[] getMountLocation () throws UnableToMountSystemException
 	{
@@ -38,7 +39,7 @@ public class SystemMount
 
 		} catch (Exception ex)
 		{
-			Log.d(Constants.LOG_NAME, "Error getting mount location", ex);
+			Log.d(TAG, "Error getting mount location", ex);
 		} finally
 		{
 			if (fReader != null)
@@ -48,7 +49,7 @@ public class SystemMount
 					fReader.close();
 				} catch (IOException ex)
 				{
-					Log.e(Constants.LOG_NAME, "Error closing file reader", ex);
+					Log.e(TAG, "Error closing file reader", ex);
 				}
 
 			}
@@ -60,7 +61,7 @@ public class SystemMount
 					br.close();
 				} catch (IOException ex)
 				{
-					Log.e(Constants.LOG_NAME, "Error closing buffered reader", ex);
+					Log.e(TAG, "Error closing buffered reader", ex);
 				}
 			}
 

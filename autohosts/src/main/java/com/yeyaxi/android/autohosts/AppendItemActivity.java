@@ -8,8 +8,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.yeyaxi.AutoHosts.R;
-
 /**
  * @author Yaxi Ye
  */
@@ -43,7 +41,7 @@ public class AppendItemActivity extends Activity
 			{
 				Intent intent = new Intent();
 				intent.putExtra("NewEntry", items.getText().toString());
-				AppendItemActivity.this.setResult(Constants.APPEND_ITEM_REQUEST_CODE, intent);
+				AppendItemActivity.this.setResult(BaseActivity.APPEND_ITEM_REQUEST_CODE, intent);
 				AppendItemActivity.this.finish();
 			}
 

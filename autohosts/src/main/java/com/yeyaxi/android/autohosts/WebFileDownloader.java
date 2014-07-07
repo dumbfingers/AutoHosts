@@ -9,7 +9,7 @@ import java.net.URL;
 public class WebFileDownloader extends AsyncTask<String, Void, InputStream>
 {
 	private AutoHostsActivity caller;
-
+    private static final String TAG = WebFileDownloader.class.getSimpleName();
 	public WebFileDownloader (AutoHostsActivity caller)
 	{
 		this.caller = caller;
@@ -20,11 +20,11 @@ public class WebFileDownloader extends AsyncTask<String, Void, InputStream>
 	{
 		try
 		{
-			Log.d(Constants.LOG_NAME, "Retrieving url: " + inputs[0]);
+			Log.d(TAG, "Retrieving url: " + inputs[0]);
 			return new URL(inputs[0]).openStream();
 		} catch (Exception e)
 		{
-			Log.e(Constants.LOG_NAME, "Error retrieving url stream. ", e);
+			Log.e(TAG, "Error retrieving url stream. ", e);
 		}
 		return null;
 	}

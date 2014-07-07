@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/RootView"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical">
+    android:id="@+id/RootView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false">
     <TextView
-            android:id="@+id/ver"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.11"
-            android:text="@string/current_ver"/>
+        android:id="@+id/ver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="0.11"
+        android:textColor="@color/terminal_green"
+        android:text="@string/current_ver"/>
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -18,7 +24,7 @@
         android:layout_above="@+id/linearLayout1"
         android:layout_below="@id/ver" >
 
-    <TextView
+        <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,41 +33,41 @@
 
 
     <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:gravity="bottom"
-            android:orientation="horizontal">
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:orientation="horizontal">
 
         <Button
-                android:id="@+id/getHosts"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btn_getHosts"/>
+            android:id="@+id/getHosts"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_getHosts"/>
 
         <Button
-                android:id="@+id/setHosts"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btn_setHosts"/>
+            android:id="@+id/setHosts"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_setHosts"/>
 
         <Button
-                android:id="@+id/revertHosts"
-                android:layout_width="102dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btn_revertHosts"/>
+            android:id="@+id/revertHosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_revertHosts"/>
     </LinearLayout>
 
     <LinearLayout
-            android:id="@+id/adLayout"
-            android:layout_below="@id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:id="@+id/adLayout"
+        android:layout_below="@id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     </LinearLayout>
 
 </RelativeLayout>

@@ -2,15 +2,23 @@ package com.yeyaxi.android.autohosts;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import com.yeyaxi.AutoHosts.R;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class FileCopier extends AsyncTask<Object, Void, Boolean>
 {
 	private AutoHostsActivity callback;
 	private int completionMessage;
 	private boolean append;
+    private static final String TAG = FileCopier.class.getSimpleName();
 
 	public FileCopier (AutoHostsActivity callback, int completionMessage, boolean append)
 	{
@@ -51,19 +59,19 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 			process.waitFor();
 
 			int exitValue = process.exitValue();
-			Log.d(Constants.LOG_NAME, "Exit Value For File Copier: " + exitValue);
+			Log.d(TAG, "Exit Value For File Copier: " + exitValue);
 			if (exitValue != 255 && exitValue != 126)
 				return Boolean.TRUE;
 
 		} catch (InterruptedException ex)
 		{
-			Log.e(Constants.LOG_NAME, ex.getMessage(), ex);
+			Log.e(TAG, ex.getMessage(), ex);
 		} catch (IOException ex)
 		{
-			Log.e(Constants.LOG_NAME, ex.getMessage(), ex);
+			Log.e(TAG, ex.getMessage(), ex);
 		} catch (UnableToMountSystemException ex)
 		{
-			Log.e(Constants.LOG_NAME, ex.getMessage(), ex);
+			Log.e(TAG, ex.getMessage(), ex);
 		} finally
 		{
 			closeStream(bufferedReader);
@@ -91,7 +99,7 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 				closeable.close();
 		} catch (IOException ex)
 		{
-			Log.e(Constants.LOG_NAME, "Error closing stream. ", ex);
+			Log.e(TAG, "Error closing stream. ", ex);
 		}
 	}
 

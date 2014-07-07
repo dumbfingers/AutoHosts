@@ -2,7 +2,6 @@ package com.yeyaxi.android.autohosts;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import com.yeyaxi.AutoHosts.R;
 
 import java.io.File;
 
@@ -10,6 +9,7 @@ public class FileDeleter extends AsyncTask<String, Void, Boolean>
 {
 	private AutoHostsActivity caller;
 	private int callbackMessage;
+    private static final String TAG = FileDeleter.class.getSimpleName();
 
 	public FileDeleter (AutoHostsActivity caller, int callbackMessage)
 	{
@@ -30,7 +30,7 @@ public class FileDeleter extends AsyncTask<String, Void, Boolean>
 	@Override
 	protected void onPostExecute (Boolean success)
 	{
-		Log.d(Constants.LOG_NAME, "Result for deleting file (" + callbackMessage + "): " + success);
+		Log.d(TAG, "Result for deleting file (" + callbackMessage + "): " + success);
 		if (success)
 		{
 			caller.displayCalbackMessage(callbackMessage, R.string.append_success);

@@ -12,10 +12,11 @@ import java.io.IOException;
  */
 public class RootChecker
 {
+    private static final String TAG = RootChecker.class.getSimpleName();
 
 	public static boolean hasRoot ()
 	{
-		Log.i(Constants.LOG_NAME, "Checking for root permission");
+		Log.i(TAG, "Checking for root permission");
 		try
 		{
 			String[] mountLocation = SystemMount.getMountLocation();
@@ -36,26 +37,26 @@ public class RootChecker
 				String fileContents = readFileContents();
 				if (fileContents == null || !fileContents.equals("Root Test"))
 				{
-					Log.d(Constants.LOG_NAME, "Reading back contexnts failed.");
+					Log.d(TAG, "Reading back contexnts failed.");
 					return false;
 				}
 				// Phone is rooted
-				Log.d(Constants.LOG_NAME, "Phone is Rooted");
+				Log.d(TAG, "Phone is Rooted");
 				return true;
 			} else
 			{
 				// Phone is not rooted
-				Log.d(Constants.LOG_NAME, "Phone is not Rooted");
+				Log.d(TAG, "Phone is not Rooted");
 			}
 		} catch (UnableToMountSystemException ex)
 		{
-			Log.e(Constants.LOG_NAME, "Unable to mount the /system folder as read-write", ex);
+			Log.e(TAG, "Unable to mount the /system folder as read-write", ex);
 		} catch (InterruptedException ex)
 		{
-			Log.e(Constants.LOG_NAME, "Interupt exception when waiting for user to grant root permission", ex);
+			Log.e(TAG, "Interupt exception when waiting for user to grant root permission", ex);
 		} catch (IOException ex)
 		{
-			Log.e(Constants.LOG_NAME, "IO Exception when checking if phone is rooted", ex);
+			Log.e(TAG, "IO Exception when checking if phone is rooted", ex);
 		}
 		return false;
 

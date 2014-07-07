@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,26 +18,27 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.yeyaxi.AutoHosts.R;
 
+import org.apache.http.util.ByteArrayBuffer;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * AutoHosts - An app for android to update hosts.
@@ -48,6 +50,7 @@ import java.util.regex.Pattern;
 public class AutoHostsActivity extends BaseActivity
 {
 
+    private static final String TAG = AutoHostsActivity.class.getSimpleName();
 
 	private enum TASK
 	{
@@ -73,7 +76,7 @@ public class AutoHostsActivity extends BaseActivity
 		version = (TextView) findViewById(R.id.ver);
         // apply fonts
         setFont(version);
-        
+
 		getHosts = (Button) findViewById(R.id.getHosts);
 		setHosts = (Button) findViewById(R.id.setHosts);
 		revertHosts = (Button) findViewById(R.id.revertHosts);
@@ -81,8 +84,8 @@ public class AutoHostsActivity extends BaseActivity
 		// Create the adView
 	    adView = new AdView(this);
         adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
-        adView.setAdUnitId(Constants.MY_AD_UNIT_ID);
-	    // Lookup your LinearLayout assuming it�s been given
+        adView.setAdUnitId(BaseActivity.MY_AD_UNIT_ID);
+	    // Lookup your LinearLayout assuming its been given
 	    // the attribute android:id="@+id/mainLayout"
 	    LinearLayout layout = (LinearLayout)findViewById(R.id.adLayout);
 
@@ -94,14 +97,13 @@ public class AutoHostsActivity extends BaseActivity
 	    // Initiate a generic request to load it with an ad
 	    adView.loadAd(adRequestBuilder.build());
 
-		try
-		{
-			version.setText(getString(R.string.current_ver) + getVersion(Constants.svn));
-		} catch (IOException ex)
-		{
-			Log.d(Constants.LOG_NAME, "Error getting version", ex);
-			version.setText(getString(R.string.current_ver) + " Unknown");
-		}
+//			version.setText(getString(R.string.current_ver) + getVersionTask.execute(BaseActivity.PROJECTH));
+        getVersionTask.execute(BaseActivity.PROJECTH);
+//		} catch (IOException ex)
+//		{
+//			Log.d(BaseActivity.LOG_NAME, "Error getting version", ex);
+//			version.setText(getString(R.string.current_ver) + " Unknown");
+//		}
 		taskQueue = new LinkedList<TASK>();
 	}
 
@@ -220,7 +222,7 @@ public class AutoHostsActivity extends BaseActivity
 
 				//Call another activity to handle this.
 				Intent intent = new Intent(getApplicationContext(), AppendItemActivity.class);
-				this.startActivityForResult(intent, Constants.APPEND_ITEM_REQUEST_CODE);
+				this.startActivityForResult(intent, BaseActivity.APPEND_ITEM_REQUEST_CODE);
 
 				break;
 
@@ -258,7 +260,7 @@ public class AutoHostsActivity extends BaseActivity
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data)
 	{
-		if (resultCode == Constants.APPEND_ITEM_REQUEST_CODE)
+		if (resultCode == BaseActivity.APPEND_ITEM_REQUEST_CODE)
 		{
 			Serializable newEntry = data.getSerializableExtra("NewEntry");
 			if (newEntry != null)
@@ -285,33 +287,65 @@ public class AutoHostsActivity extends BaseActivity
 	/**
 	 * getVersion - Method for retrieving SVN info
 	 *
-	 * @param s - Input URL
-	 * @return - Returning String version
+	 * @param f - Input file
 	 * @throws IOException
 	 */
-	public String getVersion (String s) throws IOException
-	{
-		String version = "";
-		String curLine = "";
-		URL url = new URL(s);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.connect();
-		InputStream is = connection.getInputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		while ((curLine = reader.readLine()) != null)
-		{
-			version = version + curLine + "\n";
-		}
+	public void setVersion (File f) throws IOException {
 
-		version = version.replaceAll("\\s+", " ");
-		Pattern p = Pattern.compile("<title>(.*?)</title>");
-		Matcher m = p.matcher(version);
-		while (m.find() == true)
-		{
-			version = m.group(1);
-		}
-		return version;
+		String versionStr = "";
+
+        BufferedReader br = new BufferedReader(new FileReader(f));
+        String line;
+        while ((line = br.readLine()) != null) {
+            // process the line.
+            if (line.startsWith(BaseActivity.TIMESTAMP_PREFIX)) {
+                versionStr = line.substring(BaseActivity.TIMESTAMP_PREFIX.length() + 1);
+                break;
+            }
+        }
+        br.close();
+        version.setText(BaseActivity.PROJECTH + "\n" + getString(R.string.current_ver) + versionStr);
 	}
+
+    AsyncTask<String, Void, File> getVersionTask = new AsyncTask<String, Void, File>() {
+        @Override
+        protected File doInBackground(String... params) {
+            File f = null;
+            try {
+                URL url = new URL(params[0]);
+                URLConnection ucon = url.openConnection();
+                InputStream is = ucon.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+
+                ByteArrayBuffer baf = new ByteArrayBuffer(50);
+                int current = 0;
+                while ((current = bis.read()) != -1) {
+                    baf.append((byte) current);
+                }
+
+                f = new File(getExternalCacheDir(), "hosts");
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(baf.toByteArray());
+                fos.close();
+            } catch (MalformedURLException mue) {
+                mue.printStackTrace();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return f;
+        }
+
+        @Override
+        public void onPostExecute(File f) {
+            if (f != null) {
+                try {
+                    setVersion(f);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }
+    };
 
 	public void displayCalbackErrorMessage (final int... completionMessage)
 	{
@@ -382,7 +416,7 @@ public class AutoHostsActivity extends BaseActivity
 				closeable.close();
 			} catch (IOException ex)
 			{
-				Log.d(Constants.LOG_NAME, "Error closing stream.", ex);
+				Log.d(TAG, "Error closing stream.", ex);
 			}
 		}
 	}
@@ -414,7 +448,7 @@ public class AutoHostsActivity extends BaseActivity
 					break;
 				case DOWNLOAD_NEW_ENTRIES:
 					load = ProgressDialog.show(AutoHostsActivity.this, getString(R.string.dialog_title_load), getString(R.string.dialog_txt_load), true);
-					new WebFileDownloader(AutoHostsActivity.this).execute(Constants.hosts);
+					new WebFileDownloader(AutoHostsActivity.this).execute(BaseActivity.PROJECTH);
 					break;
 				case REVERT_ENTRIES:
 					displayCalbackMessage(R.string.label_reverting);
