@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AutoHosts.iml" filepath="$PROJECT_DIR$/AutoHosts.iml" />
       <module fileurl="file://$PROJECT_DIR$/Autohosts.iml" filepath="$PROJECT_DIR$/Autohosts.iml" />
       <module fileurl="file://$PROJECT_DIR$/autohosts/autohosts.iml" filepath="$PROJECT_DIR$/autohosts/autohosts.iml" />
     </modules>

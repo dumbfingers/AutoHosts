@@ -17,13 +17,22 @@
         android:layout_weight="0.11"
         android:textColor="@color/terminal_green"
         android:text="@string/current_ver"/>
-
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_below="@id/ver"
+        android:src="@drawable/abs__list_divider_holo_dark"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
     <ScrollView
         android:id="@+id/scrollView"
+        android:layout_below="@id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_below="@id/ver" >
+        android:layout_above="@+id/linearLayout1">
 
         <TextView
             android:id="@+id/textView2"
@@ -35,7 +44,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_below="@id/scrollView"
         android:src="@drawable/abs__list_divider_holo_dark"
         android:adjustViewBounds="true"
@@ -57,7 +66,7 @@
             android:textColor="@color/terminal_green"
             style="@style/Widget.Sherlock.ActionButton"/>
         <ImageView
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
@@ -74,12 +83,11 @@
             android:textColor="@color/terminal_green"
             style="@style/Widget.Sherlock.ActionButton"/>
         <ImageView
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:layout_gravity="center_vertical"
-
             android:src="@drawable/abs__list_divider_holo_dark"
             android:adjustViewBounds="true"
             android:scaleType="fitXY" />
