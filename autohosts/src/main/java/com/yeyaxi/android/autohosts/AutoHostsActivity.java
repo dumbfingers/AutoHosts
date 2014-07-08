@@ -81,6 +81,9 @@ public class AutoHostsActivity extends BaseActivity
 		setHosts = (Button) findViewById(R.id.setHosts);
 		revertHosts = (Button) findViewById(R.id.revertHosts);
 		textView2 = (TextView) findViewById(R.id.textView2);
+
+        setFont(textView2);
+
 		// Create the adView
 	    adView = new AdView(this);
         adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
@@ -266,7 +269,7 @@ public class AutoHostsActivity extends BaseActivity
 			if (newEntry != null)
 			{
 				addEntryToFile(newEntry.toString(), "newHost");
-				new FileCopier(AutoHostsActivity.this, R.string.addingHostsToFile, true).execute(getFilesDir() + "/newHost", "/system/etc/hosts");
+				new FileCopier(AutoHostsActivity.this, R.string.addingHostsToFile, true).execute(getExternalCacheDir() + "/newHost", "/system/etc/hosts");
 			}
 		}
 
@@ -279,7 +282,7 @@ public class AutoHostsActivity extends BaseActivity
 			displayCalbackErrorMessage(R.string.label_updating);
 		else
 		{
-			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(inputStream, getFilesDir() + "/hosts");
+			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(inputStream, getExternalCacheDir() + "/hosts");
 			displayCalbackMessage(R.string.host_pulled);
 		}
 	}
@@ -440,11 +443,11 @@ public class AutoHostsActivity extends BaseActivity
 			{
 				case BACKUP_ENTRIES:
 					displayCalbackMessage(R.string.label_backingup);
-					new FileCopier(AutoHostsActivity.this, R.string.label_backingup, false).execute("/system/etc/hosts", getFilesDir() + "/hosts.bak");
+					new FileCopier(AutoHostsActivity.this, R.string.label_backingup, false).execute("/system/etc/hosts", getExternalCacheDir() + "/hosts.bak");
 					break;
 				case LOAD_NEW_ENTRIES:
 					displayCalbackMessage(R.string.label_loadingFile);
-					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getFilesDir() + "/hosts", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getExternalCacheDir() + "/hosts", "/system/etc/hosts");
 					break;
 				case DOWNLOAD_NEW_ENTRIES:
 					load = ProgressDialog.show(AutoHostsActivity.this, getString(R.string.dialog_title_load), getString(R.string.dialog_txt_load), true);
@@ -452,22 +455,22 @@ public class AutoHostsActivity extends BaseActivity
 					break;
 				case REVERT_ENTRIES:
 					displayCalbackMessage(R.string.label_reverting);
-					File backupFile = new File(getFilesDir() + "/hosts.bak");
+					File backupFile = new File(getExternalCacheDir(), "hosts.bak");
 					// Check if the file exists.  If it doesn't exist quickly make a new backup with only the localhost entry
 					if (backupFile == null || !backupFile.isFile())
 						addEntryToFile("127.0.0.1 localhost", "hosts.bak");
-					new FileCopier(AutoHostsActivity.this, R.string.label_reverting, false).execute(getFilesDir() + "/hosts.bak", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_reverting, false).execute(getExternalCacheDir() + "/hosts.bak", "/system/etc/hosts");
 					break;
 				case DELETE_DOWNLOADED_ENTRIES:
 					displayCalbackMessage(R.string.label_deleteDownloadedFiles);
-					new FileDeleter(AutoHostsActivity.this, R.string.label_deleteDownloadedFiles).execute(getFilesDir() + "/hosts");
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deleteDownloadedFiles).execute(getExternalCacheDir() + "/hosts");
 					break;
 				case DELETE_BACKUP:
-					new FileDeleter(AutoHostsActivity.this, R.string.label_deletingBackupFiles).execute(getFilesDir() + "/hosts.bak");
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deletingBackupFiles).execute(getExternalCacheDir() + "/hosts.bak");
 					break;
 				case LOAD_BLANK_FILE:
 					addEntryToFile("127.0.0.1 localhost", "blank");
-					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getFilesDir() + "/blank", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getExternalCacheDir() + "/blank", "/system/etc/hosts");
 					break;
 				case DISPLAY_SUCCESS_MESSAGE:
 					displayCalbackMessage(R.string.host_success);

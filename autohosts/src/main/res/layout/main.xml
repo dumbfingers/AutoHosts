@@ -4,9 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:fitsSystemWindows="true"
+    android:background="@android:color/background_dark"
     android:clipToPadding="false">
     <TextView
         android:id="@+id/ver"
@@ -27,11 +28,18 @@
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
+            android:textColor="@color/terminal_green"
             android:layout_height="wrap_content"
             android:text=""/>
     </ScrollView>
 
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/scrollView"
+        android:src="@drawable/abs__list_divider_holo_dark"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
@@ -45,21 +53,44 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_getHosts"/>
-
+            android:text="@string/btn_getHosts"
+            android:textColor="@color/terminal_green"
+            style="@style/Widget.Sherlock.ActionButton"/>
+        <ImageView
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/abs__list_divider_holo_dark"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY" />
         <Button
             android:id="@+id/setHosts"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_setHosts"/>
+            android:text="@string/btn_setHosts"
+            android:textColor="@color/terminal_green"
+            style="@style/Widget.Sherlock.ActionButton"/>
+        <ImageView
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_gravity="center_vertical"
 
+            android:src="@drawable/abs__list_divider_holo_dark"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" />
         <Button
             android:id="@+id/revertHosts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_revertHosts"/>
+            android:text="@string/btn_revertHosts"
+            android:textColor="@color/terminal_green"
+            style="@style/Widget.Sherlock.ActionButton"/>
     </LinearLayout>
 
     <LinearLayout

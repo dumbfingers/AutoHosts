@@ -19,6 +19,7 @@
     <string name="fix_dns">Fix DNS</string>
     <string name="label_fixingDNS">Fixing DNS...</string>
     <string name="add_hosts_entry">Add Hosts Entry</string>
+    <string name="add_hosts_source">Add Hosts Source</string>
     <string name="addingHostsToFile">Adding Hosts Entry to File...</string>
     <string name="label_backingup">Backing up existing entries...</string>
     <string name="label_loadingFile">Loading Hosts File...</string>

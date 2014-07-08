@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/add_hosts_entry" android:title="@string/add_hosts_entry"></item>
-    <item android:id="@+id/revert_blank" android:title="@string/revert_blank"></item>
-    <item android:id="@+id/fix_dns" android:title="@string/fix_dns"></item>
 
-    <item android:id="@+id/about" android:title="@string/about"></item>
+
+    <item
+        android:id="@+id/add_hosts_entry"
+        android:title="@string/add_hosts_entry"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/add_hosts_source"
+        android:title="@string/add_hosts_source"
+        android:icon="@drawable/ic_action_new_source"
+        android:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/revert_blank"
+        android:title="@string/revert_blank"
+        android:icon="@drawable/ic_action_undo"
+        android:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/fix_dns"
+        android:title="@string/fix_dns"
+        android:icon="@drawable/ic_action_disconnect"
+        android:showAsAction="ifRoom|withText"/>
+
+    <item
+        android:id="@+id/about"
+        android:title="@string/about"
+        android:icon="@drawable/ic_action_about"
+        android:showAsAction="ifRoom|withText"/>
 
 
 </menu>
