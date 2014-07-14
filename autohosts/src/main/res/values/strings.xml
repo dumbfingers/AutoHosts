@@ -5,8 +5,8 @@
     <string name="app_name">AutoHosts</string>
     <string name="current_ver">Current Hosts Version on server: </string>
     <string name="host_pulled">hosts Retrieved!</string>
-    <string name="btn_setHosts">Set hosts</string>
-    <string name="btn_getHosts">Get hosts</string>
+    <string name="btn_setHosts">Set\nhosts</string>
+    <string name="btn_getHosts">Get\nhosts</string>
     <string name="dialog_title_load">Please standby...</string>
     <string name="dialog_txt_load">Now retrieving hosts.</string>
     <string name="errorDownloading">Error downloading hosts</string>

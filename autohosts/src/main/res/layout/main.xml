@@ -64,7 +64,8 @@
             android:layout_weight="1"
             android:text="@string/btn_getHosts"
             android:textColor="@color/terminal_green"
-            style="@style/Widget.Sherlock.ActionButton"/>
+            style="@style/Widget.Sherlock.ActionButton"
+            android:gravity="center" />
         <ImageView
             android:layout_width="1dp"
             android:layout_height="match_parent"
@@ -81,7 +82,8 @@
             android:layout_weight="1"
             android:text="@string/btn_setHosts"
             android:textColor="@color/terminal_green"
-            style="@style/Widget.Sherlock.ActionButton"/>
+            style="@style/Widget.Sherlock.ActionButton"
+            android:gravity="center" />
         <ImageView
             android:layout_width="1dp"
             android:layout_height="match_parent"
@@ -98,7 +100,8 @@
             android:layout_weight="1"
             android:text="@string/btn_revertHosts"
             android:textColor="@color/terminal_green"
-            style="@style/Widget.Sherlock.ActionButton"/>
+            style="@style/Widget.Sherlock.ActionButton"
+            android:gravity="center" />
     </LinearLayout>
 
     <LinearLayout
