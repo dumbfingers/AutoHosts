@@ -283,10 +283,21 @@ public class AutoHostsActivity extends BaseActivity
 			displayCalbackErrorMessage(R.string.label_updating);
 		else
 		{
-			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(file, getWritableCacheDir() + "/hosts");
+//			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(file, getWritableCacheDir() + "/hosts");
 			displayCalbackMessage(R.string.host_pulled);
 		}
 	}
+
+    public void loadHostsFromInputStream (InputStream inputStream)
+    {
+        if (inputStream == null)
+            displayCalbackErrorMessage(R.string.label_updating);
+        else
+        {
+            new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(inputStream, getWritableCacheDir() + "/hosts");
+            displayCalbackMessage(R.string.host_pulled);
+        }
+    }
 
 	/**
 	 * getVersion - Method for retrieving SVN info

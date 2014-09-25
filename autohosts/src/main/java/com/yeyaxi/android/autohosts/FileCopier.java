@@ -56,6 +56,7 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 			os.writeBytes("exit\n");
 			os.flush();
 			os.close();
+//            new CommandRunner(callback, completionMessage).execute("cp " + inputs[0] + " " + inputs[1]);
 
 			process.waitFor();
 
