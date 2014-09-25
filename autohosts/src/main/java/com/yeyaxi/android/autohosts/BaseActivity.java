@@ -19,6 +19,7 @@ public class BaseActivity extends SherlockActivity {
 //    public static final String hosts = "https://kelvin-mirex-svn.googlecode.com/svn/trunk/ipv4-hosts/hosts";
 //    public static final String svn = "https://kelvin-mirex-svn.googlecode.com/svn/trunk/ipv4-hosts/";
     public static final String PROJECTH = "https://www.projecth.us/sources/9/25/hosts";
+    public static final String IMOUTO = "https://www.dropbox.com/sh/lw0ljk3sllmimpz/AADvmg0wxOXHAtLQ9WhPlvAva/imouto.host.txt?dl=1";
     public static final String TIMESTAMP_PREFIX = "#+UPDATE_TIME";
     public static final String LOG_NAME = "AutoHosts";
     public static final String MY_AD_UNIT_ID = "a14eba45f4f4154";

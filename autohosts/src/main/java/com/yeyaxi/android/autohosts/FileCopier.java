@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -88,6 +89,8 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 			return new InputStreamReader((InputStream) input);
 		if(input instanceof  String)
 			return new FileReader((String)input);
+        if(input instanceof File)
+            return new FileReader((File)input);
 		else throw new FileNotFoundException("Unknown file type. " + input);
 	}
 

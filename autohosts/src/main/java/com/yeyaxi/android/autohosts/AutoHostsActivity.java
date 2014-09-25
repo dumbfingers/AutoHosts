@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,7 +45,7 @@ import java.util.Queue;
  * AutoHosts - An app for android to update hosts.
  *
  * @author Yaxi Ye
- * @version 1.0.2
+ * @version 1.1
  * @since Nov.7.2011
  */
 public class AutoHostsActivity extends BaseActivity
@@ -101,7 +102,7 @@ public class AutoHostsActivity extends BaseActivity
 	    adView.loadAd(adRequestBuilder.build());
 
 //			version.setText(getString(R.string.current_ver) + getVersionTask.execute(BaseActivity.PROJECTH));
-        getVersionTask.execute(BaseActivity.PROJECTH);
+        getVersionTask.execute(BaseActivity.IMOUTO);
 //		} catch (IOException ex)
 //		{
 //			Log.d(BaseActivity.LOG_NAME, "Error getting version", ex);
@@ -269,20 +270,20 @@ public class AutoHostsActivity extends BaseActivity
 			if (newEntry != null)
 			{
 				addEntryToFile(newEntry.toString(), "newHost");
-				new FileCopier(AutoHostsActivity.this, R.string.addingHostsToFile, true).execute(getExternalCacheDir() + "/newHost", "/system/etc/hosts");
+				new FileCopier(AutoHostsActivity.this, R.string.addingHostsToFile, true).execute(getWritableCacheDir() + "/newHost", "/system/etc/hosts");
 			}
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	public void loadHostsFromInputStream (InputStream inputStream)
+	public void loadHostsFromFile (File file)
 	{
-		if (inputStream == null)
+		if (file == null)
 			displayCalbackErrorMessage(R.string.label_updating);
 		else
 		{
-			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(inputStream, getExternalCacheDir() + "/hosts");
+			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(file, getWritableCacheDir() + "/hosts");
 			displayCalbackMessage(R.string.host_pulled);
 		}
 	}
@@ -307,7 +308,7 @@ public class AutoHostsActivity extends BaseActivity
             }
         }
         br.close();
-        version.setText(BaseActivity.PROJECTH + "\n" + getString(R.string.current_ver) + versionStr);
+        version.setText(BaseActivity.IMOUTO + "\n" + getString(R.string.current_ver) + versionStr);
 	}
 
     AsyncTask<String, Void, File> getVersionTask = new AsyncTask<String, Void, File>() {
@@ -326,7 +327,7 @@ public class AutoHostsActivity extends BaseActivity
                     baf.append((byte) current);
                 }
 
-                f = new File(getExternalCacheDir(), "hosts");
+                f = new File(getWritableCacheDir(), "hosts");
                 FileOutputStream fos = new FileOutputStream(f);
                 fos.write(baf.toByteArray());
                 fos.close();
@@ -349,6 +350,23 @@ public class AutoHostsActivity extends BaseActivity
             }
         }
     };
+
+    // just in case some of the android devices are not equipped with SD card (or "External Storage")
+    public File getWritableCacheDir () {
+        if (isExternalStorageWritable()) {
+            return getExternalCacheDir();
+        } else {
+            return getCacheDir();
+        }
+    }
+
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
 
 	public void displayCalbackErrorMessage (final int... completionMessage)
 	{
@@ -443,34 +461,34 @@ public class AutoHostsActivity extends BaseActivity
 			{
 				case BACKUP_ENTRIES:
 					displayCalbackMessage(R.string.label_backingup);
-					new FileCopier(AutoHostsActivity.this, R.string.label_backingup, false).execute("/system/etc/hosts", getExternalCacheDir() + "/hosts.bak");
+					new FileCopier(AutoHostsActivity.this, R.string.label_backingup, false).execute("/system/etc/hosts", getWritableCacheDir() + "/hosts.bak");
 					break;
 				case LOAD_NEW_ENTRIES:
 					displayCalbackMessage(R.string.label_loadingFile);
-					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getExternalCacheDir() + "/hosts", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getWritableCacheDir() + "/hosts", "/system/etc/hosts");
 					break;
 				case DOWNLOAD_NEW_ENTRIES:
 					load = ProgressDialog.show(AutoHostsActivity.this, getString(R.string.dialog_title_load), getString(R.string.dialog_txt_load), true);
-					new WebFileDownloader(AutoHostsActivity.this).execute(BaseActivity.PROJECTH);
+					new WebFileDownloader(AutoHostsActivity.this).execute(BaseActivity.IMOUTO);
 					break;
 				case REVERT_ENTRIES:
 					displayCalbackMessage(R.string.label_reverting);
-					File backupFile = new File(getExternalCacheDir(), "hosts.bak");
+					File backupFile = new File(getWritableCacheDir(), "hosts.bak");
 					// Check if the file exists.  If it doesn't exist quickly make a new backup with only the localhost entry
 					if (backupFile == null || !backupFile.isFile())
 						addEntryToFile("127.0.0.1 localhost", "hosts.bak");
-					new FileCopier(AutoHostsActivity.this, R.string.label_reverting, false).execute(getExternalCacheDir() + "/hosts.bak", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_reverting, false).execute(getWritableCacheDir() + "/hosts.bak", "/system/etc/hosts");
 					break;
 				case DELETE_DOWNLOADED_ENTRIES:
 					displayCalbackMessage(R.string.label_deleteDownloadedFiles);
-					new FileDeleter(AutoHostsActivity.this, R.string.label_deleteDownloadedFiles).execute(getExternalCacheDir() + "/hosts");
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deleteDownloadedFiles).execute(getWritableCacheDir() + "/hosts");
 					break;
 				case DELETE_BACKUP:
-					new FileDeleter(AutoHostsActivity.this, R.string.label_deletingBackupFiles).execute(getExternalCacheDir() + "/hosts.bak");
+					new FileDeleter(AutoHostsActivity.this, R.string.label_deletingBackupFiles).execute(getWritableCacheDir() + "/hosts.bak");
 					break;
 				case LOAD_BLANK_FILE:
 					addEntryToFile("127.0.0.1 localhost", "blank");
-					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getExternalCacheDir() + "/blank", "/system/etc/hosts");
+					new FileCopier(AutoHostsActivity.this, R.string.label_loadingFile, false).execute(getWritableCacheDir() + "/blank", "/system/etc/hosts");
 					break;
 				case DISPLAY_SUCCESS_MESSAGE:
 					displayCalbackMessage(R.string.host_success);
