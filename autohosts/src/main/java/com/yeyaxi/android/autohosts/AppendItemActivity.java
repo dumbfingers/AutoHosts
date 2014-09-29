@@ -1,6 +1,5 @@
 package com.yeyaxi.android.autohosts;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +10,7 @@ import android.widget.EditText;
 /**
  * @author Yaxi Ye
  */
-public class AppendItemActivity extends Activity
+public class AppendItemActivity extends BaseActivity
 {
 
 	EditText items;

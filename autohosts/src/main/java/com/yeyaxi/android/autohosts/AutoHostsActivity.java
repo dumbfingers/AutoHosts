@@ -11,14 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import org.apache.http.util.ByteArrayBuffer;
 
@@ -66,7 +63,7 @@ public class AutoHostsActivity extends BaseActivity
 	private Button setHosts;
 	private Button revertHosts;
 	private ProgressDialog load = null;
-	private AdView adView;
+//	private AdView adView;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState)
@@ -86,20 +83,20 @@ public class AutoHostsActivity extends BaseActivity
         setFont(textView2);
 
 		// Create the adView
-	    adView = new AdView(this);
-        adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
-        adView.setAdUnitId(BaseActivity.MY_AD_UNIT_ID);
+//	    adView = new AdView(this);
+//        adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
+//        adView.setAdUnitId(BaseActivity.MY_AD_UNIT_ID);
 	    // Lookup your LinearLayout assuming its been given
 	    // the attribute android:id="@+id/mainLayout"
-	    LinearLayout layout = (LinearLayout)findViewById(R.id.adLayout);
+//	    LinearLayout layout = (LinearLayout)findViewById(R.id.adLayout);
 
 	    // Add the adView to it
-	    layout.addView(adView);
+//	    layout.addView(adView);
 
-        AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+//        AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
 
 	    // Initiate a generic request to load it with an ad
-	    adView.loadAd(adRequestBuilder.build());
+//	    adView.loadAd(adRequestBuilder.build());
 
 //			version.setText(getString(R.string.current_ver) + getVersionTask.execute(BaseActivity.PROJECTH));
         getVersionTask.execute(BaseActivity.IMOUTO);
@@ -113,9 +110,9 @@ public class AutoHostsActivity extends BaseActivity
 
 	@Override
 	  public void onDestroy() {
-	    if (adView != null) {
-	      adView.destroy();
-	    }
+//	    if (adView != null) {
+//	      adView.destroy();
+//	    }
 	    super.onDestroy();
 	  }
 	
@@ -222,11 +219,11 @@ public class AutoHostsActivity extends BaseActivity
 				break;
 
 			case R.id.add_hosts_entry:
-				//Add dialog for add entry
+				//TODO Add dialog for add entry
 
 				//Call another activity to handle this.
-				Intent intent = new Intent(getApplicationContext(), AppendItemActivity.class);
-				this.startActivityForResult(intent, BaseActivity.APPEND_ITEM_REQUEST_CODE);
+//				Intent intent = new Intent(getApplicationContext(), AppendItemActivity.class);
+//				this.startActivityForResult(intent, BaseActivity.APPEND_ITEM_REQUEST_CODE);
 
 				break;
 
@@ -241,7 +238,7 @@ public class AutoHostsActivity extends BaseActivity
 			case R.id.about:
 				//Add dialog for About
 				AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
-				builderAbout.setMessage(R.string.dialog_about);
+				builderAbout.setMessage(getResources().getString(R.string.dialog_about) + "Hosts from: " + BaseActivity.IMOUTO);
 				builderAbout.setTitle(R.string.about);
 				builderAbout.setCancelable(true);
 				builderAbout.setPositiveButton("OK", new DialogInterface.OnClickListener()
@@ -319,7 +316,7 @@ public class AutoHostsActivity extends BaseActivity
             }
         }
         br.close();
-        version.setText(BaseActivity.IMOUTO + "\n" + getString(R.string.current_ver) + versionStr);
+        version.setText(getString(R.string.current_ver) + versionStr);
 	}
 
     AsyncTask<String, Void, File> getVersionTask = new AsyncTask<String, Void, File>() {

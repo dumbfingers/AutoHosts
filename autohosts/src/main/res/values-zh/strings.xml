@@ -4,11 +4,11 @@
     <string name="hello">Hello World, AutoHostsActivity!</string>
     <string name="app_name">AutoHosts</string>
     <string name="label_tip">您应当首先确认本机已安装 busybox</string>
-    <string name="current_ver">当前服务器 hosts 版本：</string>
+    <string name="current_ver">当前 hosts 版本：</string>
     <string name="host_pulled">成功获取 hosts ！</string>
     <string name="btn_setHosts">替换 hosts</string>
     <string name="btn_getHosts">获取 hosts</string>
-    <string name="dialog_title_load">请稍侯...</string>
+    <string name="dialog_title_load">请稍候...</string>
     <string name="dialog_txt_load">正在获取 hosts ...</string>
     <string name="err_no_root">错误：无法取得 ROOT 权限！</string>
     <string name="host_success">已成功替换 hosts！</string>
@@ -20,7 +20,7 @@
     <string name="add_hosts_source">添加 hosts 源</string>
     <string name="about">关于本工具</string>
     <string name="dialog_dns">DNS 设定可以指定当前网络环境所用 DNS（3G/WiFi 均适用），该设定只针对当前网络环境生效，一旦网络环境改变或者断网重连，需重新设定。</string>
-    <string name="dialog_about"><b>AutoHosts</b>\n\n版本 1.0.3\n\n作者 ss1271\n\n在Twitter上关注@ss1271\n\n本软件遵循 GPLv3 协议.</string>
+    <string name="dialog_about"><b>AutoHosts</b>\n\n作者 ss1271\n\n在Twitter上关注@ss1271\n\n</string>
     <string name="dialog_ok">确认</string>
     <string name="dialog_cancel">取消</string>
     <string name="dialog_title_append">添加 hosts 条目</string>
