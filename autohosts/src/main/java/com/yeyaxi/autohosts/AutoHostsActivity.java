@@ -1,4 +1,4 @@
-package com.yeyaxi.autohosts;
+package com.yeyaxi.AutoHosts;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,6 +20,11 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.yeyaxi.AutoHosts.BaseActivity;
+import com.yeyaxi.AutoHosts.CommandRunner;
+import com.yeyaxi.AutoHosts.FileDeleter;
+import com.yeyaxi.AutoHosts.RootChecker;
+import com.yeyaxi.AutoHosts.WebFileDownloader;
 
 import org.apache.http.util.ByteArrayBuffer;
 

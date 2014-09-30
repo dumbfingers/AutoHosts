@@ -1,7 +1,8 @@
-package com.yeyaxi.autohosts;
+package com.yeyaxi.AutoHosts;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -36,7 +37,7 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 		Process process = null;
 		try
 		{
-			String[] mountLocation = SystemMount.getMountLocation();
+			String[] mountLocation = com.yeyaxi.AutoHosts.SystemMount.getMountLocation();
 
 			final Runtime runtime = Runtime.getRuntime();
 			process = runtime.exec("su");
@@ -75,7 +76,7 @@ public class FileCopier extends AsyncTask<Object, Void, Boolean>
 		} catch (IOException ex)
 		{
 			Log.e(TAG, ex.getMessage(), ex);
-		} catch (UnableToMountSystemException ex)
+		} catch (com.yeyaxi.AutoHosts.UnableToMountSystemException ex)
 		{
 			Log.e(TAG, ex.getMessage(), ex);
 		} finally

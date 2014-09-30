@@ -1,4 +1,4 @@
-package com.yeyaxi.autohosts;
+package com.yeyaxi.AutoHosts;
 
 import android.os.AsyncTask;
 import android.util.Log;

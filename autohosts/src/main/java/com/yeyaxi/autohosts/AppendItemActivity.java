@@ -1,4 +1,4 @@
-package com.yeyaxi.autohosts;
+package com.yeyaxi.AutoHosts;
 
 import android.content.Intent;
 import android.os.Bundle;
