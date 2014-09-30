@@ -1,4 +1,4 @@
-package com.yeyaxi.android.autohosts;
+package com.yeyaxi.autohosts;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

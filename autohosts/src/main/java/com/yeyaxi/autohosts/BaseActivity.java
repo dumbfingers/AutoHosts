@@ -1,4 +1,4 @@
-package com.yeyaxi.android.autohosts;
+package com.yeyaxi.autohosts;
 
 import android.annotation.TargetApi;
 import android.graphics.Typeface;

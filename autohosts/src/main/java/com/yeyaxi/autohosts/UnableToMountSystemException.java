@@ -1,4 +1,4 @@
-package com.yeyaxi.android.autohosts;
+package com.yeyaxi.autohosts;
 
 public class UnableToMountSystemException extends Exception
 {
