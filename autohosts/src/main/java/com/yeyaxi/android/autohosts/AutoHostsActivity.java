@@ -4,9 +4,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,12 +31,15 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -58,12 +65,11 @@ public class AutoHostsActivity extends BaseActivity
 	private static final DateFormat df = DateFormat.getTimeInstance(DateFormat.MEDIUM);
 	private Queue<TASK> taskQueue = null;
 	private TextView version;
-	private TextView textView2;
+	private TextView textViewTerminal;
 	private Button getHosts;
 	private Button setHosts;
 	private Button revertHosts;
 	private ProgressDialog load = null;
-//	private AdView adView;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState)
@@ -78,33 +84,12 @@ public class AutoHostsActivity extends BaseActivity
 		getHosts = (Button) findViewById(R.id.getHosts);
 		setHosts = (Button) findViewById(R.id.setHosts);
 		revertHosts = (Button) findViewById(R.id.revertHosts);
-		textView2 = (TextView) findViewById(R.id.textView2);
+		textViewTerminal = (TextView) findViewById(R.id.textViewTerminal);
 
-        setFont(textView2);
+        setFont(textViewTerminal);
 
-		// Create the adView
-//	    adView = new AdView(this);
-//        adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
-//        adView.setAdUnitId(BaseActivity.MY_AD_UNIT_ID);
-	    // Lookup your LinearLayout assuming its been given
-	    // the attribute android:id="@+id/mainLayout"
-//	    LinearLayout layout = (LinearLayout)findViewById(R.id.adLayout);
-
-	    // Add the adView to it
-//	    layout.addView(adView);
-
-//        AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-
-	    // Initiate a generic request to load it with an ad
-//	    adView.loadAd(adRequestBuilder.build());
-
-//			version.setText(getString(R.string.current_ver) + getVersionTask.execute(BaseActivity.PROJECTH));
         getVersionTask.execute(BaseActivity.IMOUTO);
-//		} catch (IOException ex)
-//		{
-//			Log.d(BaseActivity.LOG_NAME, "Error getting version", ex);
-//			version.setText(getString(R.string.current_ver) + " Unknown");
-//		}
+
 		taskQueue = new LinkedList<TASK>();
 	}
 
@@ -218,14 +203,14 @@ public class AutoHostsActivity extends BaseActivity
 				alertDNS.show();
 				break;
 
-			case R.id.add_hosts_entry:
+//			case R.id.add_hosts_entry:
 				//TODO Add dialog for add entry
 
 				//Call another activity to handle this.
 //				Intent intent = new Intent(getApplicationContext(), AppendItemActivity.class);
 //				this.startActivityForResult(intent, BaseActivity.APPEND_ITEM_REQUEST_CODE);
 
-				break;
+//				break;
 
 			case R.id.revert_blank:
 				taskQueue.clear();
@@ -276,11 +261,21 @@ public class AutoHostsActivity extends BaseActivity
 
 	public void loadHostsFromFile (File file)
 	{
-		if (file == null)
-			displayCalbackErrorMessage(R.string.label_updating);
-		else
-		{
-//			new FileCopier(AutoHostsActivity.this, R.string.label_updating, false).execute(file, getWritableCacheDir() + "/hosts");
+		if (file == null) {
+            displayCalbackErrorMessage(R.string.label_updating);
+            try {
+                copyHostsFromAssets();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+        } else	{
+            try {
+                String ver = getVersion(file);
+                version.setText(getString(R.string.current_ver) + ver);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
 			displayCalbackMessage(R.string.host_pulled);
 		}
 	}
@@ -296,13 +291,13 @@ public class AutoHostsActivity extends BaseActivity
         }
     }
 
-	/**
-	 * getVersion - Method for retrieving SVN info
-	 *
-	 * @param f - Input file
-	 * @throws IOException
-	 */
-	public void setVersion (File f) throws IOException {
+    /**
+     * getVersion - get the last update info from hosts file
+     * @param f - Input file
+     * @return
+     * @throws IOException
+     */
+	public String getVersion (File f) throws IOException {
 
 		String versionStr = "";
 
@@ -316,13 +311,57 @@ public class AutoHostsActivity extends BaseActivity
             }
         }
         br.close();
-        version.setText(getString(R.string.current_ver) + versionStr);
+
+        return versionStr;
 	}
 
+    /**
+     * getVersion - get the last update info from hosts file
+     * @param inputStream - input stream
+     * @return
+     * @throws IOException
+     */
+    public String getVersion (InputStream inputStream) throws  IOException {
+        String versionStr = "";
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        String line;
+        while ((line = br.readLine()) != null) {
+            // process the line.
+            if (line.startsWith(BaseActivity.TIMESTAMP_PREFIX)) {
+                versionStr = line.substring(BaseActivity.TIMESTAMP_PREFIX.length() + 1);
+                break;
+            }
+        }
+        br.close();
+
+        return versionStr;
+    }
+
+    private void copyHostsFromAssets() throws IOException {
+        InputStream is = getAssets().open("hosts/hosts");
+        BufferedInputStream bis = new BufferedInputStream(is);
+        ByteArrayBuffer baf = new ByteArrayBuffer(64);
+        int current = 0;
+        while ((current = bis.read()) != -1) {
+            baf.append((byte) current);
+        }
+
+        File f = new File(getWritableCacheDir(), "hosts");
+        FileOutputStream fos = new FileOutputStream(f);
+        fos.write(baf.toByteArray());
+        fos.flush();
+        is.close();
+        fos.close();
+    }
+
     AsyncTask<String, Void, File> getVersionTask = new AsyncTask<String, Void, File>() {
+
         @Override
         protected File doInBackground(String... params) {
+
             File f = null;
+
             try {
                 URL url = new URL(params[0]);
                 URLConnection ucon = url.openConnection();
@@ -338,6 +377,7 @@ public class AutoHostsActivity extends BaseActivity
                 f = new File(getWritableCacheDir(), "hosts");
                 FileOutputStream fos = new FileOutputStream(f);
                 fos.write(baf.toByteArray());
+                is.close();
                 fos.close();
             } catch (MalformedURLException mue) {
                 mue.printStackTrace();
@@ -351,7 +391,30 @@ public class AutoHostsActivity extends BaseActivity
         public void onPostExecute(File f) {
             if (f != null) {
                 try {
-                    setVersion(f);
+                    String verStringFromSource = getVersion(f);
+                    String verStringFromAsset = getVersion(getAssets().open("hosts/hosts"));
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date dateAsset = sdf.parse(verStringFromAsset);
+                    Date dateSource = sdf.parse(verStringFromSource);
+
+                    String verStr = dateAsset.before(dateSource) ? verStringFromSource : verStringFromAsset;
+
+                    version.setText(getString(R.string.current_ver) + verStr);
+
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                } catch (ParseException pe) {
+                    pe.printStackTrace();
+                }
+            } else {
+                // something wrong while trying to retrieve hosts file from source
+                // copy the hosts file from Assets folder to cache folder
+                try {
+                    // tell user that the source is unreachable
+//                    Toast.makeText(getApplicationContext(), R.string.errorDownloading, Toast.LENGTH_LONG).show();
+                    displayCalbackErrorMessage(R.string.errorDownloading);
+                    copyHostsFromAssets();
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
@@ -383,13 +446,40 @@ public class AutoHostsActivity extends BaseActivity
 			@Override
 			public void run ()
 			{
-				if (load != null && load.isShowing())
-					load.dismiss();
+				if (load != null && load.isShowing()) {
+                    load.dismiss();
+                }
 				StringBuilder sb = new StringBuilder();
-				for (int messageId : completionMessage)
-					sb.append(getString(messageId));
-				sb.append(getString(R.string.errorPrefix));
-				textView2.setText(getTimeStamp() + sb.toString() + "\n" + textView2.getText());
+                sb.append(getString(R.string.errorPrefix));
+                for (int messageId : completionMessage) {
+                    sb.append(getString(messageId));
+                }
+//                String str = "<font color=#ff0000>" + sb.toString() + "</font>";
+                Spannable errStr = new SpannableString(sb.toString());
+                errStr.setSpan(
+                        new ForegroundColorSpan(Color.RED),
+                        0,
+                        errStr.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                Spannable greenStringTime = new SpannableString(getTimeStamp());
+                greenStringTime.setSpan(
+                        new ForegroundColorSpan(getResources().getColor(R.color.terminal_green)),
+                        0,
+                        greenStringTime.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                Spannable greenStringText = new SpannableString(textViewTerminal.getText());
+                greenStringText.setSpan(
+                        new ForegroundColorSpan(getResources().getColor(R.color.terminal_green)),
+                        0,
+                        greenStringText.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                textViewTerminal.setText(greenStringTime);
+                textViewTerminal.append(errStr);
+                textViewTerminal.append("\n");
+                textViewTerminal.append(greenStringText);
 			}
 		});
 	}
@@ -406,7 +496,7 @@ public class AutoHostsActivity extends BaseActivity
 				StringBuilder sb = new StringBuilder();
 				for (int messageId : id)
 					sb.append(getString(messageId));
-				textView2.setText(getTimeStamp() + sb.toString() + "\n" + textView2.getText());
+				textViewTerminal.setText(getTimeStamp() + sb.toString() + "\n" + textViewTerminal.getText());
 			}
 		});
 	}

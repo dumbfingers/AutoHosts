@@ -9,8 +9,8 @@
     <string name="btn_getHosts">Get\nhosts</string>
     <string name="dialog_title_load">Please standby...</string>
     <string name="dialog_txt_load">Now retrieving hosts.</string>
-    <string name="errorDownloading">Error downloading hosts</string>
-    <string name="errorPrefix">Error</string>
+    <string name="errorDownloading">Fetching hosts failed, will use pre-packaged hosts</string>
+    <string name="errorPrefix">Error: </string>
     <string name="err_no_root">Error: Cannot get ROOT</string>
     <string name="host_success">hosts successfully relaced.</string>
     <string name="label_updating">Update in Progress...</string>

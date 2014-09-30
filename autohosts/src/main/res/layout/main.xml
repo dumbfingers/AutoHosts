@@ -35,7 +35,7 @@
         android:layout_above="@+id/linearLayout1">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textViewTerminal"
             android:layout_width="wrap_content"
             android:textColor="@color/terminal_green"
             android:layout_height="wrap_content"

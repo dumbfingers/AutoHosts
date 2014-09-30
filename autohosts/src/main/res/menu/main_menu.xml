@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item
-        android:id="@+id/add_hosts_entry"
-        android:title="@string/add_hosts_entry"
-        android:icon="@drawable/ic_action_new"
-        android:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/add_hosts_source"
-        android:title="@string/add_hosts_source"
-        android:icon="@drawable/ic_action_new_source"
-        android:showAsAction="ifRoom|withText"/>
+    <!--<item-->
+        <!--android:id="@+id/add_hosts_entry"-->
+        <!--android:title="@string/add_hosts_entry"-->
+        <!--android:icon="@drawable/ic_action_new"-->
+        <!--android:showAsAction="ifRoom|withText"/>-->
+    <!--<item-->
+        <!--android:id="@+id/add_hosts_source"-->
+        <!--android:title="@string/add_hosts_source"-->
+        <!--android:icon="@drawable/ic_action_new_source"-->
+        <!--android:showAsAction="ifRoom|withText"/>-->
     <item
         android:id="@+id/revert_blank"
         android:title="@string/revert_blank"
